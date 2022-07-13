@@ -1,3 +1,13 @@
+const { createApp } = Vue
+
+  createApp({
+    data() {
+      return {
+        message: 'Hello Vue!'
+      }
+    }
+  }).mount('#app')
+
 const ERROR_DELTA = 0.0001;
 
 const colour_background = (51, 50, 50);

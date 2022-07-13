@@ -1,43 +1,47 @@
 <!DOCTYPE html>
 <html>
 
-<head>
+<head >
+  <script src="https://unpkg.com/vue@3"></script>
+  <script setup src="setup.js"></script>
   <title>
 
   </title>
 </head>
 
 <body>
-  <!-- Add a topbar with buttons exactly 30 pixels tall -->
-  <div class="topbar">
-    <div class="subtopbar">
-      <button >
-        Move
-      </button>
-      <button>
-        Edit
-      </button>
-      <button>
-        Add
-      </button>
-      <button>
-        Share
-      </button>
-    </div>
-  </div>
-
-  <!-- Add a sidebar with fixed position that can be collapsed-->
-  <div class="sidebar">
-    <div class="subsidebar">
-      <div class="closeSubBar">
-
+  <div id="app">
+    <!-- Add a topbar with buttons exactly 30 pixels tall -->
+    <div class="topbar">
+      <div class="subtopbar">
+        <button >
+          {{ message }}
+        </button>
+        <button>
+          Edit
+        </button>
+        <button>
+          Add
+        </button>
+        <button>
+          Share
+        </button>
       </div>
     </div>
-    </div>  <!-- End of sidebar -->
+    
+    
+    <div class="sidebar">
+      <div class="subsidebar">
+      <div class="closeSubBar">
+        
+      </div>
+    </div>
+  </div>  
+  </div>
 
 
+  
   <script src="p5.js" type="text/javascript"></script>
-
   <script src="camera.js" type="text/javascript"></script>
   <script src="io.js" type="text/javascript"></script>
   <script src="geometry.js" type="text/javascript"></script>
