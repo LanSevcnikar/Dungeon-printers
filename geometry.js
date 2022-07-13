@@ -78,13 +78,14 @@ class Layer {
   //draweAllShapes function
   drawAllShapes() {
     //set fill and stroke according to internal data
-    fill(this.background);
-    stroke(this.lines);
-    strokeWeight(this.line_width);
     this.shapes.forEach((shape) => {
-      drawShape(shape);
+      fill(100, 100, 100, 100);
+      stroke(this.lines);
+      strokeWeight(this.line_width);
+      drawShape(shape, this);
       this.shapes.forEach((shape2) => {
         if (shape != shape2) {
+          stroke(this.lines);
           drawAllPointsOfCollision(shape, shape2);
         }
       });
@@ -132,7 +133,7 @@ function findPointOfCollision(p1, p2, p3, p4) {
       return null;
     }
     //repeat above code, switiching p1 with p3 and p2 with p4
-    if(isSameDouble(p3.x, p4.x)){
+    if (isSameDouble(p3.x, p4.x)) {
       // calculate the linear function defined by p1 and p2
       let m = (p2.y - p1.y) / (p2.x - p1.x);
       let b = p1.y - m * p1.x;
@@ -162,12 +163,12 @@ function findPointOfCollision(p1, p2, p3, p4) {
   // calculate the linear function defined by p3 and p4
   let m2 = (p4.y - p3.y) / (p4.x - p3.x);
   let b2 = p3.y - m2 * p3.x;
-  
+
   // calculate the x coordinate of the point of collision
   let x = (b2 - b1) / (m1 - m2);
   // calculate the y coordinate of the point of collision
   let y = m1 * x + b1;
-  if(isSameDouble(m1, m2)){
+  if (isSameDouble(m1, m2)) {
     return null;
   }
   //debug to console p1, p2, p3, p4, x, y
@@ -175,9 +176,9 @@ function findPointOfCollision(p1, p2, p3, p4) {
 
   //check if new point is between p1 and p2 and p3 and p4
   if (y <= max(p1.y, p2.y) && y >= min(p1.y, p2.y)) {
-    if(x <= max(p1.x, p2.x) && x >= min(p1.x, p2.x)){
-      if(y <= max(p3.y, p4.y) && y >= min(p3.y, p4.y)){
-        if(x <= max(p3.x, p4.x) && x >= min(p3.x, p4.x)){
+    if (x <= max(p1.x, p2.x) && x >= min(p1.x, p2.x)) {
+      if (y <= max(p3.y, p4.y) && y >= min(p3.y, p4.y)) {
+        if (x <= max(p3.x, p4.x) && x >= min(p3.x, p4.x)) {
           return new Point(x, y);
         }
       }

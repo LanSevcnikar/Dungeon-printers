@@ -49,7 +49,9 @@ function mouseReleased() {
 
   let shape = new Shape([
     new Point(mousePrevious.x, mousePrevious.y),
+    new Point(temp.x, mousePrevious.y),
     temp,
+    new Point(mousePrevious.x, temp.y),
   ]);
   mainLayer.addShape(shape);
   mousePrevious.x = NaN;
