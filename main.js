@@ -4,8 +4,8 @@ const colour_background = (51, 50, 50);
 const colour_lines = (232, 233, 235);
 const colour_background_lines = (132, 133, 135);
 
-const screenWidth = window.innerWidth;
-const screenHeight = window.innerHeight - 50;
+screenWidth = window.innerWidth;
+screenHeight = window.innerHeight ;
 
 let mousePrevious = new Point(NaN, NaN);
 let cam = new Point(0, 0);
@@ -207,4 +207,13 @@ function draw() {
     100
   );
   text("Mouse Location: (" + mouseX + "," + mouseY + ")", 10, 120);
+}
+
+//when window size changes, adjust p5 canvas accordingly
+function windowResized() {
+  console.log("Window was resized");
+  screenHeight = window.innerHeight;
+  screenWidth = window.innerWidth;
+  console.log(screenHeight, screenWidth);
+  resizeCanvas(screenWidth, screenHeight);
 }

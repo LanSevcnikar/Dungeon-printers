@@ -46,13 +46,25 @@ function mouseReleased() {
   let temp = new Point(mouseX, mouseY);
   temp = screenToCam(temp);
   temp = snapToInt(temp);
+  if(isSamePoint(temp, mousePrevious)) {
+    mousePrevious.x = NaN;
+    mousePrevious.y = NaN;
+    return;
+  }
+  if(isSameDouble(mousePrevious.x, temp.x) || isSameDouble(mousePrevious.y, temp.y)) {
+    mousePrevious.x = NaN;
+    mousePrevious.y = NaN;
+    return;
+  }
 
-  let shape = new Shape([
-    new Point(mousePrevious.x, mousePrevious.y),
-    new Point(temp.x, mousePrevious.y),
-    temp,
-    new Point(mousePrevious.x, temp.y),
-  ]);
+  let shape;
+  shape = new Shape([
+      new Point(mousePrevious.x, mousePrevious.y),
+      new Point(temp.x, mousePrevious.y),
+      temp,
+      new Point(mousePrevious.x, temp.y),
+    ]);
+
   mainLayer.addShape(shape);
   mousePrevious.x = NaN;
   mousePrevious.y = NaN;
