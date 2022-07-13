@@ -79,14 +79,14 @@ class Layer {
   drawAllShapes() {
     //set fill and stroke according to internal data
     this.shapes.forEach((shape) => {
-      fill(100, 100, 100, 100);
+      fill(this.background);
       stroke(this.lines);
       strokeWeight(this.line_width);
       drawShape(shape, this);
       this.shapes.forEach((shape2) => {
         if (shape != shape2) {
           stroke(this.lines);
-          drawAllPointsOfCollision(shape, shape2);
+          //drawAllPointsOfCollision(shape, shape2);
         }
       });
     });
@@ -172,7 +172,7 @@ function findPointOfCollision(p1, p2, p3, p4) {
     return null;
   }
   //debug to console p1, p2, p3, p4, x, y
-  console.log(p1, p2, p3, p4, x, y);
+  //console.log(p1, p2, p3, p4, x, y);
 
   //check if new point is between p1 and p2 and p3 and p4
   if (y <= max(p1.y, p2.y) && y >= min(p1.y, p2.y)) {

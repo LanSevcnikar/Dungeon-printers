@@ -20,11 +20,11 @@ function mouseWheel(event) {
 	division.y *= ratio.y;
 	division.y *= event.delta / 1000;
 
-	console.log(division)
+	//console.log(division)
 	cam.subtract(division);
 
   screenSizeOfGrid *= 1 -  event.delta / 1000; 
-  console.log(screenSizeOfGrid);
+  //console.log(screenSizeOfGrid);
 }
 
 
