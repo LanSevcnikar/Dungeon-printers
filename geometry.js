@@ -24,8 +24,12 @@ class Point {
   //normalize function to normalize the point
   normalize() {
     let mag = sqrt(this.x * this.x + this.y * this.y);
-    this.x = (100 * this.x) / mag;
-    this.y = (100 * this.y) / mag;
+    this.x = (this.x) / mag;
+    this.y = (this.y) / mag;
+  }
+  //function to return the magnitudr of the point
+  magnitude() {
+    return sqrt(this.x * this.x + this.y * this.y);
   }
   //multiply x and y by scalar
   multiply(scalar) {
@@ -63,11 +67,10 @@ class Shape {
 }
 
 class Layer {
-  constructor(colour_local_background, colour_local_lines, local_width) {
-    this.background = colour_local_background;
-    this.lines = colour_local_lines;
+  constructor(local_name) {
+    this.color = 240;
+    this.name = local_name;
     this.shapes = [];
-    this.line_width = local_width;
   }
 
   //add shape
@@ -79,18 +82,27 @@ class Layer {
   drawAllShapes() {
     //set fill and stroke according to internal data
     this.shapes.forEach((shape) => {
-      fill(this.background);
-      stroke(this.lines);
-      strokeWeight(this.line_width);
+      fill((this.color+130)/4);
+      stroke(this.color);
+      strokeWeight(2);
       drawShape(shape, this);
       this.shapes.forEach((shape2) => {
         if (shape != shape2) {
-          stroke(this.lines);
+          stroke(this.color);
           //drawAllPointsOfCollision(shape, shape2);
         }
       });
     });
   }
+}
+
+//function taht calculates the avergae of two colors
+function averageColor(color1, color2) {
+  let average = [0, 0, 0];
+  for (let i = 0; i < 3; i++) {
+    average[i] = (color1[i] + color2[i]) / 2;
+  }
+  return (average[0], average[1], average[2]);
 }
 
 //function to check if two points are the same called isSamePoint but for doublkes

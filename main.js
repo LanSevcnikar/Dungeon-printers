@@ -1,12 +1,16 @@
-const { createApp } = Vue
+const { createApp } = Vue;
 
-  createApp({
-    data() {
-      return {
-        message: 'Hello Vue!'
-      }
-    }
-  }).mount('#app')
+let app = createApp({
+  data() {
+    return {
+      selectedTool: 0,
+      offsetForDrawing: 0,
+      freeDraw: false,
+      layers: [new Layer("Layer 1"), new Layer("Base")],
+      selectedLayer: 0,
+    };
+  },
+}).mount("#app");
 
 const ERROR_DELTA = 0.0001;
 
@@ -15,12 +19,11 @@ const colour_lines = (232, 233, 235);
 const colour_background_lines = (132, 133, 135);
 
 screenWidth = window.innerWidth;
-screenHeight = window.innerHeight ;
+screenHeight = window.innerHeight;
 
 let mousePrevious = new Point(NaN, NaN);
 let cam = new Point(0, 0);
 let screenSizeOfGrid = 40;
-let mainLayer = new Layer((75, 74, 74), colour_lines, 2);
 
 //draw shape function, s - shape, l- layer
 function drawShape(s, l) {
@@ -68,21 +71,18 @@ function drawShape(s, l) {
       }
     });
 
-    
-
     //draw line between all points using camToScreen
     for (let j = 0; j < points.length - 1; j++) {
       let insideOfSomeShape = false;
       //loop through all shapes in layer and check if point is inside of some shape
       for (let k = 0; k < l.shapes.length; k++) {
-       // console.log(points, s, l.shapes[k]);
+        // console.log(points, s, l.shapes[k]);
         if (s == l.shapes[k]) {
           continue;
         }
         if (
           isPointInShape(middlePoint(points[j], points[j + 1]), l.shapes[k])
         ) {
-         
           insideOfSomeShape = true;
           break;
         }
@@ -110,16 +110,61 @@ function drawShape(s, l) {
 
 //function to check if a point is in some shape
 function isPointInShape(p, s) {
-  if (s.points.length - 1 == 4) {
-    let mx = min(s.points[0].x, s.points[2].x);
-    let my = min(s.points[0].y, s.points[2].y);
-    let Mx = max(s.points[0].x, s.points[2].x);
-    let My = max(s.points[0].y, s.points[2].y);
-    if (p.x > mx + 0 && p.x < Mx - 0 && p.y > my + 0 && p.y < My - 0) {
-      return true;
+  let points = [];
+  //loop through all points in s
+  for (let i = 0; i < s.points.length - 1; i++) {
+    let p1 = new Point(-1000, p.y);
+    let p2 = new Point(1000, p.y);
+    let p3 = new Point(s.points[i].x, s.points[i].y);
+    let p4 = new Point(s.points[i + 1].x, s.points[i + 1].y);
+    points.push(findPointOfCollision(p1, p2, p3, p4));
+  }
+  //remove null items from points
+  points = points.filter(function (n) {
+    return n != null;
+  });
+
+  //sort by x coordinate
+  points.sort(function (a, b) {
+    return a.x - b.x;
+  });
+
+  //count number of points with x smaller than p
+  let count = 0;
+  for (let i = 0; i < points.length; i++) {
+    if (points[i].x < p.x) {
+      count++;
     }
   }
+
+  //count number of points with x bigger than p
+  let count2 = 0;
+  for (let i = 0; i < points.length; i++) {
+    if (points[i].x > p.x) {
+      count2++;
+    }
+  }
+
+  //console.log(p,s,points);
+  if(count == count2 && count > 0) return true;
   return false;
+
+
+}
+
+//function  to check if point inside of triangle defined by 3 points
+function isPointInsideTriangle(p, p0, p1, p2) {
+  var dX = p.x - p2.x;
+  var dY = p.y - p2.y;
+  var dX21 = p2.x - p1.x;
+  var dY12 = p1.y - p2.y;
+  var D = dY12 * (p0.x - p2.x) + dX21 * (p0.y - p2.y);
+  var s = dY12 * dX + dX21 * dY;
+  var t = (p2.y - p0.y) * dX + (p0.x - p2.x) * dY;
+  if (D < 0) return s <= 0 && t <= 0 && s + t >= D;
+  return (
+    s - ERROR_DELTA >= 0 && t - ERROR_DELTA >= 0 && s + t + ERROR_DELTA <= D
+  );
 }
 
 //function to return middlepoint of two points
@@ -129,15 +174,49 @@ function middlePoint(p1, p2) {
 
 //function to draw shape between current mouse position and previous mouse position
 function drawingOutlineNewShape() {
+  if (app.selectedTool == 0) {
+    drawOutlineNewShapeRectangle();
+  }
+  if (app.selectedTool == 1) {
+    drawOutlineNewShapeOcto();
+  }
+}
+
+function drawOutlineNewShapeRectangle() {
   let temp = new Point(mouseX, mouseY);
   temp = screenToCam(temp);
-  temp = snapToInt(temp);
+  if (!app.freeDraw) {
+    temp = snapToInt(temp);
+  }
   let shape = new Shape([
     new Point(mousePrevious.x, mousePrevious.y),
     new Point(temp.x, mousePrevious.y),
     temp,
     new Point(mousePrevious.x, temp.y),
   ]);
+  drawShape(shape, new Layer(colour_lines, 2));
+}
+
+function drawOutlineNewShapeOcto() {
+  let temp = new Point(mouseX, mouseY);
+  temp = screenToCam(temp);
+  temp.subtract(mousePrevious);
+  let r = temp.magnitude();
+  if (!app.freeDraw) {
+    r = Math.round(r);
+  }
+  let a = PI / 8;
+  let points = [];
+  for (let i = 0; i < 8; i++) {
+    let x = r * cos(a);
+    let y = r * sin(a);
+    let something = new Point(x, y);
+    something.add(mousePrevious);
+    points.push(something);
+    a += PI / 4;
+  }
+
+  let shape = new Shape(points);
   drawShape(shape, new Layer(colour_lines, 2));
 }
 
@@ -195,7 +274,9 @@ function draw() {
   //set fill colour to whitr
   background(colour_background);
 
-  mainLayer.drawAllShapes();
+  app.layers.forEach((layer) => {
+    layer.drawAllShapes();
+  });
   drawGrid();
   //if mouse pressed not NaN draw circle with radious 3 at that location
   strokeWeight(2);

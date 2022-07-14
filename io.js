@@ -11,61 +11,123 @@ function mouseDragged() {
 //on scroll change grid size
 function mouseWheel(event) {
   //if scroll into positive multiply grid size by scalar otherwise divide it by it
-	//ratio of mouse to screen
-	let ratio = new Point(mouseX / screenWidth, mouseY / screenHeight);
-	let division = new Point(screenWidth / screenSizeOfGrid, screenHeight / screenSizeOfGrid);
-	
-	division.x *= ratio.x;
-	division.x *= event.delta / 1000; 
-	division.y *= ratio.y;
-	division.y *= event.delta / 1000;
+  //ratio of mouse to screen
+  let ratio = new Point(mouseX / screenWidth, mouseY / screenHeight);
+  let division = new Point(
+    screenWidth / screenSizeOfGrid,
+    screenHeight / screenSizeOfGrid
+  );
 
-	//console.log(division)
-	cam.subtract(division);
+  division.x *= ratio.x;
+  division.x *= event.delta / 1000;
+  division.y *= ratio.y;
+  division.y *= event.delta / 1000;
 
-  screenSizeOfGrid *= 1 -  event.delta / 1000; 
+  //console.log(division)
+  cam.subtract(division);
+
+  screenSizeOfGrid *= 1 - event.delta / 1000;
   //console.log(screenSizeOfGrid);
 }
-
 
 //on mouse pressed save current mouse position
 function mousePressed() {
   // if spacebar is not being pressed
   if (!keyIsDown(32)) {
-    mousePrevious.x = mouseX;
-    mousePrevious.y = mouseY;
-    mousePrevious = screenToCam(mousePrevious);
-    mousePrevious = snapToInt(mousePrevious);
-		//draw circle at mouse pressed with radious 10
-	}
-
-} 
+    if (app.selectedTool == 0 || app.selectedTool == 1) {
+      mousePrevious.x = mouseX;
+      mousePrevious.y = mouseY;
+      mousePrevious = screenToCam(mousePrevious);
+      if (!app.freeDraw) {
+        mousePrevious = snapToInt(mousePrevious);
+      }
+      //draw circle at mouse pressed with radious 10
+    }
+  }
+}
 
 //on mouse released set mouse previous values to NaN
 function mouseReleased() {
+  if (app.selectedTool == 0) {
+    mouseRealeasedRectangle();
+  }
+  if (app.selectedTool == 1) {
+    mouseRealeasedOcto();
+  }
+
+  mousePrevious.x = NaN;
+  mousePrevious.y = NaN;
+}
+
+function mouseRealeasedRectangle() {
   let temp = new Point(mouseX, mouseY);
   temp = screenToCam(temp);
-  temp = snapToInt(temp);
-  if(isSamePoint(temp, mousePrevious)) {
+  if (!app.freeDraw) {
+    temp = snapToInt(temp);
+  }
+  if (isSamePoint(temp, mousePrevious)) {
     mousePrevious.x = NaN;
     mousePrevious.y = NaN;
     return;
   }
-  if(isSameDouble(mousePrevious.x, temp.x) || isSameDouble(mousePrevious.y, temp.y)) {
+  if (
+    isSameDouble(mousePrevious.x, temp.x) ||
+    isSameDouble(mousePrevious.y, temp.y)
+  ) {
     mousePrevious.x = NaN;
     mousePrevious.y = NaN;
     return;
   }
+
+  let topLeft = new Point(
+    min(mousePrevious.x, temp.x) + app.offsetForDrawing,
+    min(mousePrevious.y, temp.y) + app.offsetForDrawing
+  );
+  let bottomRight = new Point(
+    max(mousePrevious.x, temp.x) - app.offsetForDrawing,
+    max(mousePrevious.y, temp.y) - app.offsetForDrawing
+  );
+  let topRight = new Point(
+    max(mousePrevious.x, temp.x) - app.offsetForDrawing,
+    min(mousePrevious.y, temp.y) + app.offsetForDrawing
+  );
+  let bottomLeft = new Point(
+    min(mousePrevious.x, temp.x) + app.offsetForDrawing,
+    max(mousePrevious.y, temp.y) - app.offsetForDrawing
+  );
 
   let shape;
-  shape = new Shape([
-      new Point(mousePrevious.x, mousePrevious.y),
-      new Point(temp.x, mousePrevious.y),
-      temp,
-      new Point(mousePrevious.x, temp.y),
-    ]);
+  shape = new Shape([topLeft, topRight, bottomRight, bottomLeft]);
 
-  mainLayer.addShape(shape);
+  //loop through all the points in shape
+
+  app.layers[app.selectedLayer].addShape(shape);
+  mousePrevious.x = NaN;
+  mousePrevious.y = NaN;
+}
+
+function mouseRealeasedOcto() {
+  let temp = new Point(mouseX, mouseY);
+  temp = screenToCam(temp);
+  temp.subtract(mousePrevious);
+  let r = temp.magnitude();
+  if(!app.freeDraw){
+    r = Math.round(r);
+  }
+  let a = PI / 8;
+  let points = [];
+  for (let i = 0; i < 8; i++) {
+    let x = r * cos(a);
+    let y = r * sin(a);
+    let something = new Point(x, y);
+    something.add(mousePrevious);
+    points.push(something);
+    a += PI / 4;
+  }
+
+  
+  let shape = new Shape(points);
+  app.layers[app.selectedLayer].addShape(shape);
   mousePrevious.x = NaN;
   mousePrevious.y = NaN;
 }

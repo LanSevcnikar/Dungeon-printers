@@ -17,15 +17,7 @@
         <button >
           {{ message }}
         </button>
-        <button>
-          Edit
-        </button>
-        <button>
-          Add
-        </button>
-        <button>
-          Share
-        </button>
+        
       </div>
     </div>
     
@@ -33,7 +25,32 @@
     <div class="sidebar">
       <div class="subsidebar">
       <div class="closeSubBar">
-        
+        <div class="toolSelect" style="display: flex;">
+          TOOL:
+          <br>
+          <select name="toolSelect" id="" v-model="selectedTool">
+            <option value="0">Rectengle</option>
+            <option value="1">Octagon</option>
+            <option value="2">Select</option>
+            <option value="3">Free line</option>
+            <option value="4">Character mover</option>
+          </select>
+          <div v-if="selectedTool < 2">
+            <input type="number" max="0.5" min="0" step="0.025" v-model="offsetForDrawing">
+            <input type="checkbox" v-model="freeDraw">
+          </div>
+        </div>
+        <br>
+        LAYERS
+        <div class="layers">
+
+          <div v-for="(layer,index) in layers">
+            <div :class="{'selectedLayer' : selectedLayer == index}" v-on:click="selectedLayer = index">
+              {{layer.name}}
+              <input type="number" min="0" max="255" step="1" v-model="layer.color">
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>  
@@ -80,7 +97,7 @@
       right: 0;
       height: 100vh;
       width: 450px;
-      background-color: red;
+      background-color: rgb(41,40,40);
       position: fixed;
       z-index: 2;
     }
@@ -94,7 +111,23 @@
       font-family: 'Roboto', sans-serif;
       padding: 0;
       margin: 0;
+    }
 
+    .closeSubBar {
+      background-color: rgb(0, 0, 0, 0);
+      stroke: none;
+      border: none;
+      color: white;
+      font-size: 15px;
+      font-family: 'Roboto', sans-serif;
+      padding: 20px;
+      padding-top: 50px;
+      margin: 0;
+    }
+
+    .selectedLayer{
+      /* make text bold */
+      font-weight: bold;
     }
   </style>
 
