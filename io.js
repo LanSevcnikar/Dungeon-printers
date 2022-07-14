@@ -43,6 +43,23 @@ function mousePressed() {
       }
       //draw circle at mouse pressed with radious 10
     }
+
+    if(app.selectedTool == 4){
+      let temp = new Point(mouseX, mouseY);
+      temp = screenToCam(temp);
+      let closestPlayer = app.players[0];
+      //loop through players anmd if closer, change closest player
+      for(let i = 1; i < app.players.length; i++){
+        if(temp.distance(app.players[i].location) < temp.distance(closestPlayer.location)){
+          closestPlayer = app.players[i];
+        }
+      }
+      if(temp.distance(closestPlayer.location) > 1.5){
+        closestPlayer = null;
+      }
+      console.log(closestPlayer);
+      app.selectedPlayer = closestPlayer;
+    }
   }
 }
 
@@ -55,6 +72,7 @@ function mouseReleased() {
     mouseRealeasedOcto();
   }
 
+  app.selectedPlayer = null;
   mousePrevious.x = NaN;
   mousePrevious.y = NaN;
 }
@@ -130,4 +148,13 @@ function mouseRealeasedOcto() {
   app.layers[app.selectedLayer].addShape(shape);
   mousePrevious.x = NaN;
   mousePrevious.y = NaN;
+}
+
+//when window size changes, adjust p5 canvas accordingly
+function windowResized() {
+  console.log("Window was resized");
+  screenHeight = window.innerHeight;
+  screenWidth = window.innerWidth;
+  console.log(screenHeight, screenWidth);
+  resizeCanvas(screenWidth, screenHeight);
 }

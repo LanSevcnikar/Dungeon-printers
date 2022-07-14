@@ -42,6 +42,12 @@ class Point {
     //console.log(this)
     ellipse(camToScreen(this).x, camToScreen(this).y, 5, 5);
   }
+  //distance function between this and another point
+  distance(p) {
+    return sqrt(
+      (this.x - p.x) * (this.x - p.x) + (this.y - p.y) * (this.y - p.y)
+    );
+  }
 }
 
 //class Shape
@@ -86,12 +92,6 @@ class Layer {
       stroke(this.color);
       strokeWeight(2);
       drawShape(shape, this);
-      this.shapes.forEach((shape2) => {
-        if (shape != shape2) {
-          stroke(this.color);
-          //drawAllPointsOfCollision(shape, shape2);
-        }
-      });
     });
   }
 }
