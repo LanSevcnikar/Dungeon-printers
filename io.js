@@ -33,31 +33,32 @@ function mouseWheel(event) {
 //on mouse pressed save current mouse position
 function mousePressed() {
   if (mouseX > screenWidth - 450) return;
+  updateHistory();
   // if spacebar is not being pressed
   if (!keyIsDown(32)) {
-    if (app.selectedTool == "rec" || app.selectedTool == "oct") {
+    if (app.selections.selectedTool == "rec" || app.selections.selectedTool == "oct") {
       mousePrevious.x = mouseX;
       mousePrevious.y = mouseY;
       mousePrevious = screenToCam(mousePrevious);
-      if (!app.freeDraw) {
+      if (!app.selections.freeDraw) {
         mousePrevious = snapToInt(mousePrevious);
       }
       //draw circle at mouse pressed with radious 10
     }
 
-    if (app.selectedTool == "sel") {
+    if (app.selections.selectedTool == "sel") {
       mousePrevious.x = mouseX;
       mousePrevious.y = mouseY;
       mousePrevious = screenToCam(mousePrevious);
     }
 
-    if (app.selectedTool == "mov") {
+    if (app.selections.selectedTool == "mov") {
       mousePrevious.x = mouseX;
       mousePrevious.y = mouseY;
       mousePrevious = screenToCam(mousePrevious);
     }
 
-    if (app.selectedTool == "chm") {
+    if (app.selections.selectedTool == "chm") {
       let temp = new Point(mouseX, mouseY);
       temp = screenToCam(temp);
       let closestPlayer = app.entities[0];
@@ -82,18 +83,18 @@ function mousePressed() {
 //on mouse released set mouse previous values to NaN
 function mouseReleased() {
   if (mouseX > screenWidth - 450) return;
-  if (app.selectedTool == "rec") {
+  if (app.selections.selectedTool == "rec") {
     mouseRealeasedRectangle();
-    updateLinesOfAllShapesOnLayer(app.selectedLayer);
+    updateLinesOfAllShapesOnLayer(app.selections.selectedLayer);
   }
-  if (app.selectedTool == "oct") {
+  if (app.selections.selectedTool == "oct") {
     mouseRealeasedOcto();
-    updateLinesOfAllShapesOnLayer(app.selectedLayer);
+    updateLinesOfAllShapesOnLayer(app.selections.selectedLayer);
   }
-  if (app.selectedTool == "sel") {
+  if (app.selections.selectedTool == "sel") {
     mouseReleasedSelect();
   }
-  if (app.selectedTool == "mov") {
+  if (app.selections.selectedTool == "mov") {
   }
 
   app.selectedPlayer = null;
@@ -106,9 +107,9 @@ function mouseReleasedSelect() {
   let temp = new Point(mouseX, mouseY);
   temp = screenToCam(temp);
   //loop through all shapes in selected layer
-  for (let i = 0; i < app.layers[app.selectedLayer].shapes.length; i++) {
+  for (let i = 0; i < app.layers[app.selections.selectedLayer].shapes.length; i++) {
     //set new variable to shape and loop through all points of current shape
-    let shape = app.layers[app.selectedLayer].shapes[i];
+    let shape = app.layers[app.selections.selectedLayer].shapes[i];
 
     let topLeft = new Point(
       min(mousePrevious.x, temp.x),
@@ -153,7 +154,7 @@ function mouseReleasedSelect() {
 function mouseRealeasedRectangle() {
   let temp = new Point(mouseX, mouseY);
   temp = screenToCam(temp);
-  if (!app.freeDraw) {
+  if (!app.selections.freeDraw) {
     temp = snapToInt(temp);
   }
   if (isSamePoint(temp, mousePrevious)) {
@@ -171,20 +172,20 @@ function mouseRealeasedRectangle() {
   }
 
   let topLeft = new Point(
-    min(mousePrevious.x, temp.x) + app.offsetForDrawing,
-    min(mousePrevious.y, temp.y) + app.offsetForDrawing
+    min(mousePrevious.x, temp.x) + app.selections.offsetForDrawing,
+    min(mousePrevious.y, temp.y) + app.selections.offsetForDrawing
   );
   let bottomRight = new Point(
-    max(mousePrevious.x, temp.x) - app.offsetForDrawing,
-    max(mousePrevious.y, temp.y) - app.offsetForDrawing
+    max(mousePrevious.x, temp.x) - app.selections.offsetForDrawing,
+    max(mousePrevious.y, temp.y) - app.selections.offsetForDrawing
   );
   let topRight = new Point(
-    max(mousePrevious.x, temp.x) - app.offsetForDrawing,
-    min(mousePrevious.y, temp.y) + app.offsetForDrawing
+    max(mousePrevious.x, temp.x) - app.selections.offsetForDrawing,
+    min(mousePrevious.y, temp.y) + app.selections.offsetForDrawing
   );
   let bottomLeft = new Point(
-    min(mousePrevious.x, temp.x) + app.offsetForDrawing,
-    max(mousePrevious.y, temp.y) - app.offsetForDrawing
+    min(mousePrevious.x, temp.x) + app.selections.offsetForDrawing,
+    max(mousePrevious.y, temp.y) - app.selections.offsetForDrawing
   );
 
   let shape;
@@ -192,7 +193,7 @@ function mouseRealeasedRectangle() {
 
   //loop through all the points in shape
 
-  app.layers[app.selectedLayer].addShape(shape);
+  app.layers[app.selections.selectedLayer].addShape(shape);
   mousePrevious.x = NaN;
   mousePrevious.y = NaN;
 }
@@ -202,7 +203,7 @@ function mouseRealeasedOcto() {
   temp = screenToCam(temp);
   temp.subtract(mousePrevious);
   let r = temp.magnitude();
-  if (!app.freeDraw) {
+  if (!app.selections.freeDraw) {
     r = Math.round(r);
   }
   let a = PI / 8;
@@ -217,7 +218,7 @@ function mouseRealeasedOcto() {
   }
 
   let shape = new Shape(points);
-  app.layers[app.selectedLayer].addShape(shape);
+  app.layers[app.selections.selectedLayer].addShape(shape);
   mousePrevious.x = NaN;
   mousePrevious.y = NaN;
 }
@@ -232,17 +233,7 @@ function windowResized() {
 }
 
 function exportToJson() {
-  let exported = {};
-  console.log(exported);
-  exported.selectedTool = app.selectedTool;
-  exported.offsetForDrawing = app.offsetForDrawing;
-  exported.freeDraw = app.freeDraw;
-  exported.layers = app.layers;
-  exported.selectedLayer = app.selectedLayer;
-  exported.selectedPlayer = app.selectedPlayer;
-  exported.previouslySelectedPlayer = app.previouslySelectedPlayer;
-  exported.entities = app.entities;
-  saveJSON(exported, "map.json");
+  saveJSON(app, "map.json");
 }
 
 function importToJson() {
@@ -255,30 +246,7 @@ function importToJson() {
     let data = JSON.parse(reader.result);
     console.log(data);
 
-    app.selectedTool = data.selectedTool;
-    app.offsetForDrawing = data.offsetForDrawing;
-    app.freeDraw = data.freeDraw;
-    app.layers = [];
-    for (let i = 0; i < data.layers.length; i++) {
-      app.layers.push(new Layer(data.layers[i].name));
-      for (let j = 0; j < data.layers[i].shapes.length; j++) {
-        app.layers[i].addShape(data.layers[i].shapes[j]);
-      }
-    }
-    app.selectedLayer = data.selectedLayer;
-    app.selectedPlayer = data.selectedPlayer;
-    app.previouslySelectedPlayer = data.previouslySelectedPlayer;
-    app.entities = [];
-    for (let i = 0; i < data.entities.length; i++) {
-      app.entities.push(
-        new Player(
-          data.entities[i].name,
-          data.entities[i].color,
-          data.entities[i].location.x,
-          data.entities[i].location.y
-        )
-      );
-    }
+    loadFromJson(data);
   };
 }
 
@@ -286,6 +254,40 @@ function keyPressed() {
   //check if key is delete
   if (keyCode === DELETE) {
     deleteSelected();
+  }
+
+  if(keyCode == 90){
+    if(keyIsDown(17)){
+      undoHistory();
+    }
+  }
+  
+  if(keyCode == 17){
+    if(keyIsDown(90)){
+      undoHistory();
+    }
+  }
+
+  switch (keyCode) {
+    case 49:
+      app.selections.selectedTool = "rec";
+      break;
+    case 50:
+      app.selections.selectedTool = "oct";
+      break;
+    case 51:
+      app.selections.selectedTool = "sel";
+      break;
+    case 52:
+      app.selections.selectedTool = "mov";
+      break;
+    case 53:
+      app.selections.selectedTool = "fre";
+      break;
+    case 54:
+      app.selections.selectedTool = "chm";
+      break;
+
   }
 }
 
@@ -295,7 +297,7 @@ function deleteSelected() {
     console.log(app.selectedShapes, "deleting them")
     for (let i = 0; i < app.selectedShapes.length; i++) {
 
-      app.layers[app.selectedLayer].deleteShape(app.selectedShapes[i]);
+      app.layers[app.selections.selectedLayer].deleteShape(app.selectedShapes[i]);
     }
     app.selectedShapes = [];
   }

@@ -1,12 +1,12 @@
 //function to draw shape between current mouse position and previous mouse position
 function drawingOutlineNewShape() {
-  if (app.selectedTool == "rec") {
+  if (app.selections.selectedTool == "rec") {
     drawOutlineNewShapeRectangle();
   }
-  if (app.selectedTool == "oct") {
+  if (app.selections.selectedTool == "oct") {
     drawOutlineNewShapeOcto();
   }
-  if (app.selectedTool == "sel") {
+  if (app.selections.selectedTool == "sel") {
     drawOutlineSelect();
   }
 }
@@ -26,7 +26,7 @@ function drawOutlineSelect() {
 function drawOutlineNewShapeRectangle() {
   let temp = new Point(mouseX, mouseY);
   temp = screenToCam(temp);
-  if (!app.freeDraw) {
+  if (!app.selections.freeDraw) {
     temp = snapToInt(temp);
   }
   let shape = new Shape([
@@ -43,7 +43,7 @@ function drawOutlineNewShapeOcto() {
   temp = screenToCam(temp);
   temp.subtract(mousePrevious);
   let r = temp.magnitude();
-  if (!app.freeDraw) {
+  if (!app.selections.freeDraw) {
     r = Math.round(r);
   }
   let a = PI / 8;
@@ -82,7 +82,7 @@ function drawGrid() {
     let point2 = new Point(screenWidth, i);
     line(0, camToScreen(point1).y, screenWidth, camToScreen(point2).y);
   }
-
+  if(app.selections.showDevTools == false) return;
   //at coordinated divisible by 10 note their number
   for (let i = minX; i < maxX; i++) {
     for (let j = minY; j < maxY; j++) {

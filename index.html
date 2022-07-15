@@ -16,10 +16,14 @@
     <div class="sidebar">
       <div class="subsidebar">
         <div class="closeSubBar">
+          Grid <input type="checkbox" v-model="selections.showGrid"> |
+          Developer <input type="checkbox" v-model="selections.showDevTools">
+          <div>______________________</div>
+          <br>
           <div class="toolSelect" style="display: flex;">
             TOOL:
             <br>
-            <select name="toolSelect" id="" v-model="selectedTool">
+            <select name="toolSelect" id="" v-model="selections.selectedTool">
               <option value="rec">Rectengle</option>
               <option value="oct">Octagon</option>
               <option value="sel">Select</option>
@@ -27,18 +31,19 @@
               <option value="fre">Free line</option>
               <option value="chm">Character mover</option>
             </select>
-            <div v-if="selectedTool in ['rec', 'oct']">
-              <input type="number" max="0.5" min="0" step="0.025" v-model="offsetForDrawing">
-              <input type="checkbox" v-model="freeDraw">
+            <div v-if="selections.selectedTool == 'rec' || selections.selectedTool == 'oct'">
+              <input type="number" max="0.5" min="0" step="0.025" v-model="selections.offsetForDrawing">
+              <input type="checkbox" v-model="selections.freeDraw">
             </div>
           </div>
           <div>______________________</div>
           <br>
           LAYERS
           <div class="layers">
-            
+
             <div v-for="(layer,index) in layers">
-              <div :class="{'selectedLayer' : selectedLayer == index}" v-on:click="selectedLayer = index">
+              <div :class="{'selectedLayer' : selections.selectedLayer == index}"
+                v-on:click="selections.selectedLayer = index">
                 <button v-on:click="bumpToTop(index)"> Bump </button>
                 <button v-on:click="deleteLayer(index)"> Delete </button>
                 <input type="number" min="0" max="255" step="1" class="RGBInput" v-model="layer.color[0]">
@@ -50,10 +55,11 @@
             </div>
           </div>
           <button v-on:click="addLayer()">
-            Add layer 
+            Add layer
           </button>
           <input type="text" v-model="addedLayer" placeholder="Name">
-          <br> <div>______________________</div> <br>
+          <br>
+          <div>______________________</div> <br>
           ENTITIES
           <div class="entities">
             <input type="text" placeholder="name" v-model="addedEntity.name">
@@ -67,7 +73,10 @@
                 {{entity.name}}
               </div>
             </div>
-            <br> <div>______________________</div> <br>
+            <br>
+            <div>______________________</div> <br>
+            SAVE / LOAD
+            <br>
             <button onclick="exportToJson()">Save map</button>
             <input type="file" id="inputJSONFile">
             <button onclick="importToJson()">Load map</button>
@@ -85,6 +94,7 @@
     <script src="players.js" type="text/javascript"></script>
     <script src="drawingShape.js" type="text/javascript"></script>
     <script src="drawingOutlines.js" type="text/javascript"></script>
+    <script src="constructFromJSON.js" type="text/javascript"></script>
     <script src="main.js" type="text/javascript"></script>
 
     <style>

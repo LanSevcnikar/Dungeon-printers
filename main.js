@@ -1,22 +1,43 @@
 const { createApp } = Vue;
 
+let allDataTypes = [
+  "selectedTool",
+  "offsetForDrawing",
+  "freeDraw",
+  "layers",
+  "selectedLayer",
+  "selectedPlayer",
+  "previouslySelectedPlayer",
+  "entities",
+  "selectedShapes",
+];
+
 let app = createApp({
   data() {
     return {
-      selectedTool: "rec",
-      offsetForDrawing: 0.2,
-      freeDraw: false,
+      //Data to be saved in the file
+      selections: {
+        showGrid: true,
+        showDevTools: false,
+        selectedTool: "rec", //
+        offsetForDrawing: 0.2, //
+        freeDraw: false, //
+        selectedLayer: 0, //
+      },
+      
+      //Really importaint things
       layers: [new Layer("Layer 1")],
-      selectedLayer: 0,
-      selectedPlayer: null,
-      previouslySelectedPlayer: null,
       entities: [],
+      selectedShapes: [],
+      
+      //Not needed to be saved and backed up
+      selectedPlayer: null, 
+      previouslySelectedPlayer: null, 
       addedEntity: {
         name: "",
         color: [],
       },
       addedLayer: "",
-      selectedShapes: [],
     };
   },
   methods: {
@@ -35,18 +56,18 @@ let app = createApp({
       this.layers.push(new Layer(this.addedLayer));
       this.addedLayer = "";
     },
-    bumpToTop(index){
+    bumpToTop(index) {
       //reorder layers so that the one with the index is first
       let temp = this.layers[index];
       this.layers.splice(index, 1);
-      this.layers.push(temp)
+      this.layers.push(temp);
     },
-    deleteLayer(index){
+    deleteLayer(index) {
       //if there is more than one layer
-      if(this.layers.length > 1){
-        this.layers.splice(index,1);
+      if (this.layers.length > 1) {
+        this.layers.splice(index, 1);
       }
-    }
+    },
   },
 }).mount("#app");
 
@@ -63,6 +84,26 @@ screenHeight = window.innerHeight;
 let mousePrevious = new Point(NaN, NaN);
 let cam = new Point(0, 0);
 let screenSizeOfGrid = 40;
+
+let history = [];
+
+function updateHistory() {
+  let temp = JSON.stringify(app);
+
+  history.push(temp);
+  //delete first element if longer than 12
+  if (history.length > 12) {
+    history.shift();
+  }
+}
+
+function undoHistory() {
+  if (history.length > 0) {
+    let temp = history.pop();
+    temp = JSON.parse(temp);
+    loadFromJson(temp);
+  }
+}
 
 //function to return middlepoint of two points
 function middlePoint(p1, p2) {
@@ -83,7 +124,7 @@ function draw() {
   //set fill colour to whitr
   background(colour_background);
 
-  if (app.selectedTool == "mov" && mousePrevious.x != NaN) {
+  if (app.selections.selectedTool == "mov" && mousePrevious.x != NaN) {
     moveSelectedShapes();
   }
   app.layers.forEach((layer) => {
@@ -94,7 +135,9 @@ function draw() {
   if (!isNaN(mousePrevious.x)) {
     drawingOutlineNewShape();
   }
-  drawGrid();
+  if (app.selections.showGrid) {
+    drawGrid();
+  }
   if (app.selectedPlayer != null) {
     updateSelectedPlayerLocation(app.selectedPlayer);
   }
@@ -109,6 +152,7 @@ function draw() {
 
   //text in top corner to show cam location and scale  and grid size big font white font
   //set font to white
+  if (app.selections.showDevTools == false) return;
   fill(140);
   stroke(140);
   textSize(20);
@@ -135,6 +179,6 @@ function moveSelectedShapes() {
   temp.subtract(mousePrevious);
   temp = snapToInt(temp);
   app.selectedShapes.forEach((shape) => {
-    console.log(shape)
+    console.log(shape);
   });
 }
