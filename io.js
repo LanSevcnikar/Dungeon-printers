@@ -70,9 +70,11 @@ function mousePressed() {
 function mouseReleased() {
   if (app.selectedTool == 0) {
     mouseRealeasedRectangle();
+    updateLinesOfAllShapesOnLayer(app.selectedLayer);
   }
   if (app.selectedTool == 1) {
     mouseRealeasedOcto();
+    updateLinesOfAllShapesOnLayer(app.selectedLayer);
   }
 
   app.selectedPlayer = null;

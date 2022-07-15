@@ -1,75 +1,14 @@
 //draw shape function, s - shape, l- layer
 function drawShape(s, l) {
-  //loop throughg all points in shape by index
-  for (let i = 0; i < s.points.length - 1; i++) {
-    //if point is not the last point
-    let points = [];
-    let p1, p2;
-
-    p1 = new Point(s.points[i].x, s.points[i].y);
-    p2 = new Point(s.points[i + 1].x, s.points[i + 1].y);
-    points.push(p1);
-    points.push(p2);
-
-    //loop through all shapes in layer
-    for (let j = 0; j < l.shapes.length; j++) {
-      //loop through all points in shape
-      if (s == l.shapes[j]) {
-        continue;
-      }
-      for (let k = 0; k < l.shapes[j].points.length - 1; k++) {
-        let p3, p4;
-
-        p3 = new Point(l.shapes[j].points[k].x, l.shapes[j].points[k].y);
-        p4 = new Point(
-          l.shapes[j].points[k + 1].x,
-          l.shapes[j].points[k + 1].y
-        );
-
-        points.push(findPointOfCollision(p1, p2, p3, p4));
-      }
-    }
-
-    //filter out all null points from array
-    points = points.filter(function (n) {
-      return n != null;
-    });
-
-    //sort array of points first by x coordinate, then by y coordinate
-    points.sort(function (a, b) {
-      if (isSameDouble(a.x, b.x)) {
-        return a.y - b.y;
-      } else {
-        return a.x - b.x;
-      }
-    });
-
-    //draw line between all points using camToScreen
-    for (let j = 0; j < points.length - 1; j++) {
-      let insideOfSomeShape = false;
-      //loop through all shapes in layer and check if point is inside of some shape
-      for (let k = 0; k < l.shapes.length; k++) {
-        // console.log(points, s, l.shapes[k]);
-        if (s == l.shapes[k]) {
-          continue;
-        }
-        if (
-          isPointInShape(middlePoint(points[j], points[j + 1]), l.shapes[k])
-        ) {
-          insideOfSomeShape = true;
-          break;
-        }
-      }
-
-      if (!insideOfSomeShape) {
-        line(
-          camToScreen(points[j]).x,
-          camToScreen(points[j]).y,
-          camToScreen(points[j + 1]).x,
-          camToScreen(points[j + 1]).y
-        );
-      }
-    }
+  //loop through lines in shape object
+  for (let i = 0; i < s.lines.length; i++) {
+    //draw line
+    line(
+      camToScreen(s.lines[i][0]).x,
+      camToScreen(s.lines[i][0]).y,
+      camToScreen(s.lines[i][1]).x,
+      camToScreen(s.lines[i][1]).y
+    );
   }
 
   noStroke();
@@ -137,3 +76,84 @@ function isPointInsideTriangle(p, p0, p1, p2) {
     s - ERROR_DELTA >= 0 && t - ERROR_DELTA >= 0 && s + t + ERROR_DELTA <= D
   );
 }
+
+function updateLinesOfAllShapesOnLayer(selectedLayer) {
+  //loop through all shapes on selected layer
+  for (let i = 0; i < app.layers[selectedLayer].shapes.length; i++) {
+    updateLinesOfShape(selectedLayer,  app.layers[selectedLayer].shapes[i]);
+  }
+}
+
+function updateLinesOfShape(selectedLayer, s) {
+  let l = app.layers[selectedLayer];
+  for (let i = 0; i < s.points.length - 1; i++) {
+    //if point is not the last point
+    let points = [];
+    let p1, p2;
+
+    p1 = new Point(s.points[i].x, s.points[i].y);
+    p2 = new Point(s.points[i + 1].x, s.points[i + 1].y);
+    points.push(p1);
+    points.push(p2);
+
+    //loop through all shapes in layer
+    for (let j = 0; j < l.shapes.length; j++) {
+      //loop through all points in shape
+      if (s == l.shapes[j]) {
+        continue;
+      }
+      for (let k = 0; k < l.shapes[j].points.length - 1; k++) {
+        let p3, p4;
+
+        p3 = new Point(l.shapes[j].points[k].x, l.shapes[j].points[k].y);
+        p4 = new Point(
+          l.shapes[j].points[k + 1].x,
+          l.shapes[j].points[k + 1].y
+        );
+
+        points.push(findPointOfCollision(p1, p2, p3, p4));
+      }
+    }
+
+    //filter out all null points from array
+    points = points.filter(function (n) {
+      return n != null;
+    });
+
+    //sort array of points first by x coordinate, then by y coordinate
+    points.sort(function (a, b) {
+      if (isSameDouble(a.x, b.x)) {
+        return a.y - b.y;
+      } else {
+        return a.x - b.x;
+      }
+    });
+
+    //draw line between all points using camToScreen
+    for (let j = 0; j < points.length - 1; j++) {
+      let insideOfSomeShape = false;
+      //loop through all shapes in layer and check if point is inside of some shape
+      for (let k = 0; k < l.shapes.length; k++) {
+        // console.log(points, s, l.shapes[k]);
+        if (s == l.shapes[k]) {
+          continue;
+        }
+        if (
+          isPointInShape(middlePoint(points[j], points[j + 1]), l.shapes[k])
+        ) {
+          insideOfSomeShape = true;
+          break;
+        }
+      }
+
+      if (!insideOfSomeShape) {
+        s.lines.push([points[j], points[j + 1]]);
+      }
+    }
+  }
+}
+
+/*
+//loop throughg all points in shape by index
+  
+*/

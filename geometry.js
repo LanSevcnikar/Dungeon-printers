@@ -54,6 +54,7 @@ class Point {
 class Shape {
   constructor(a) {
     this.points = [];
+    this.lines = [];
     a.forEach((element) => {
       if (this.points.length == 0) this.points.push(element);
       else if (!isSamePoint(element, this.points[this.points.length - 1])) {
