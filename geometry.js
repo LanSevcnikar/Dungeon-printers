@@ -207,6 +207,7 @@ function findPointOfCollision(p1, p2, p3, p4) {
   return null;
 }
 
+//draws all points of collision between two shapes, not really ever used in code but meant for debugging
 function drawAllPointsOfCollision(shape1, shape2) {
   //loop through all points in shape by index
   for (let i = 1; i < shape1.points.length; i++) {

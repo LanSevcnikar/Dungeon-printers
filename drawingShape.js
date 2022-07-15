@@ -65,21 +65,6 @@ function isPointInShape(p, s) {
   return false;
 }
 
-//function  to check if point inside of triangle defined by 3 points
-function isPointInsideTriangle(p, p0, p1, p2) {
-  var dX = p.x - p2.x;
-  var dY = p.y - p2.y;
-  var dX21 = p2.x - p1.x;
-  var dY12 = p1.y - p2.y;
-  var D = dY12 * (p0.x - p2.x) + dX21 * (p0.y - p2.y);
-  var s = dY12 * dX + dX21 * dY;
-  var t = (p2.y - p0.y) * dX + (p0.x - p2.x) * dY;
-  if (D < 0) return s <= 0 && t <= 0 && s + t >= D;
-  return (
-    s - ERROR_DELTA >= 0 && t - ERROR_DELTA >= 0 && s + t + ERROR_DELTA <= D
-  );
-}
-
 function updateLinesOfAllShapesOnLayer(selectedLayer) {
   //loop through all shapes on selected layer
   for (let i = 0; i < app.layers[selectedLayer].shapes.length; i++) {
@@ -155,8 +140,3 @@ function updateLinesOfShape(selectedLayer, s) {
     }
   }
 }
-
-/*
-//loop throughg all points in shape by index
-  
-*/

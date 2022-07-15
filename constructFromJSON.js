@@ -1,8 +1,8 @@
 function loadFromJson(data) {
   console.log("Hello world",data);
-  app.selections.selectedTool = data.selectedTool;
-  app.selections.offsetForDrawing = data.offsetForDrawing;
-  app.selections.freeDraw = data.freeDraw;
+  app.selections.selectedTool = data.selections.selectedTool;
+  app.selections.offsetForDrawing = data.selections.offsetForDrawing;
+  app.selections.freeDraw = data.selections.freeDraw;
   app.selections.showGrid = data.selections.showGrid;
   app.selections.showDevTools = data.selections.showDevTools; 
   app.layers = [];
@@ -12,7 +12,7 @@ function loadFromJson(data) {
       app.layers[i].addShape(new Shape(data.layers[i].shapes[j].points));
     }
   }
-  app.selections.selectedLayer = data.selectedLayer;
+  app.selections.selectedLayer = data.selections.selectedLayer;
   app.selectedPlayer = data.selectedPlayer;
   app.previouslySelectedPlayer = data.previouslySelectedPlayer;
   app.entities = [];
@@ -32,5 +32,20 @@ function loadFromJson(data) {
   for (let i = 0; i < app.layers.length; i++) {
     //call updateLines on each layer
     updateLinesOfAllShapesOnLayer(i);
+  }
+}
+
+window.onbeforeunload = () => {
+  console.log(JSON.stringify(app));
+  let data = JSON.stringify(app);
+  window.localStorage.setItem("data", data);
+};
+
+
+window.onload = () => {
+  let data = window.localStorage.getItem("data");
+  if (data) {
+    console.log(JSON.parse(data));
+    loadFromJson(JSON.parse(data));
   }
 }

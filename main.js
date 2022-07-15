@@ -24,15 +24,15 @@ let app = createApp({
         freeDraw: false, //
         selectedLayer: 0, //
       },
-      
+
       //Really importaint things
       layers: [new Layer("Layer 1")],
       entities: [],
       selectedShapes: [],
-      
+
       //Not needed to be saved and backed up
-      selectedPlayer: null, 
-      previouslySelectedPlayer: null, 
+      selectedPlayer: null,
+      previouslySelectedPlayer: null,
       addedEntity: {
         name: "",
         color: [],
@@ -67,6 +67,28 @@ let app = createApp({
       if (this.layers.length > 1) {
         this.layers.splice(index, 1);
       }
+    },
+    resetAllData() {
+      this.selections = {
+        showGrid: true,
+        showDevTools: false,
+        selectedTool: "rec", //
+        offsetForDrawing: 0.2, //
+        freeDraw: false, //
+        selectedLayer: 0, //
+      };
+      
+      this.layers = [new Layer("Layer 1")];
+      this.entities = [];
+      this.selectedShapes = [];
+
+      this.selectedPlayer = null;
+      this.previouslySelectedPlayer = null;
+      this.addedEntity = {
+        name: "",
+        color: [],
+      };
+      this.addedLayer = "";
     },
   },
 }).mount("#app");
