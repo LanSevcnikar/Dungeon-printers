@@ -4,7 +4,7 @@ class Player {
 
   constructor(name, color, x, y) {
     this.name = name;
-    this.color = color;
+    this.color = [color[0], color[1], color[2]];
     //if x and y are not null then set location to that
 
     if (x != null && y != null) {

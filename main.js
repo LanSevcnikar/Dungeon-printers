@@ -3,8 +3,8 @@ const { createApp } = Vue;
 let app = createApp({
   data() {
     return {
-      selectedTool: 4,
-      offsetForDrawing: 0,
+      selectedTool: "rec",
+      offsetForDrawing: 0.2,
       freeDraw: false,
       layers: [new Layer("Layer 1")],
       selectedLayer: 0,
@@ -16,28 +16,44 @@ let app = createApp({
         color: [],
       },
       addedLayer: "",
+      selectedShapes: [],
     };
   },
   methods: {
-    deleteEntity(entity){
+    deleteEntity(entity) {
       this.entities.splice(this.entities.indexOf(entity), 1);
     },
-    addEntity(){
-      this.entities.push(new Player(this.addedEntity.name, this.addedEntity.color));
+    addEntity() {
+      this.entities.push(
+        new Player(this.addedEntity.name, this.addedEntity.color)
+      );
       console.log(this.entities);
       this.addEntity.name = "";
       this.addEntity.color = [];
     },
-    addLayer(){
+    addLayer() {
       this.layers.push(new Layer(this.addedLayer));
-      this.addLayer = "" ;
+      this.addedLayer = "";
+    },
+    bumpToTop(index){
+      //reorder layers so that the one with the index is first
+      let temp = this.layers[index];
+      this.layers.splice(index, 1);
+      this.layers.push(temp)
+    },
+    deleteLayer(index){
+      //if there is more than one layer
+      if(this.layers.length > 1){
+        this.layers.splice(index,1);
+      }
     }
-  }
+  },
 }).mount("#app");
 
 const ERROR_DELTA = 0.0001;
 
 const colour_background = [51, 50, 50];
+const color_select = [60, 60, 230, 180];
 const colour_lines = (232, 233, 235);
 const colour_background_lines = (132, 133, 135);
 
@@ -67,18 +83,24 @@ function draw() {
   //set fill colour to whitr
   background(colour_background);
 
+  if (app.selectedTool == "mov" && mousePrevious.x != NaN) {
+    moveSelectedShapes();
+  }
   app.layers.forEach((layer) => {
     layer.drawAllShapes();
   });
-  drawGrid();
   //if mouse pressed not NaN draw circle with radious 3 at that location
   strokeWeight(2);
   if (!isNaN(mousePrevious.x)) {
     drawingOutlineNewShape();
   }
+  drawGrid();
   if (app.selectedPlayer != null) {
     updateSelectedPlayerLocation(app.selectedPlayer);
   }
+  app.selectedShapes.forEach((shape) => {
+    drawShape(shape, new Layer("Select", color_select));
+  });
 
   //show all players
   app.entities.forEach((player) => {
@@ -87,8 +109,8 @@ function draw() {
 
   //text in top corner to show cam location and scale  and grid size big font white font
   //set font to white
-  fill(140)
-  stroke(140)
+  fill(140);
+  stroke(140);
   textSize(20);
   text("cam Location: (" + cam.x + "," + cam.y + ")", 10, 20);
   text("Grid Size: " + screenSizeOfGrid, 10, 60);
@@ -107,3 +129,12 @@ function updateSelectedPlayerLocation(player) {
   player.location = temp;
 }
 
+function moveSelectedShapes() {
+  let temp = new Point(mouseX, mouseY);
+  temp = screenToCam(temp);
+  temp.subtract(mousePrevious);
+  temp = snapToInt(temp);
+  app.selectedShapes.forEach((shape) => {
+    console.log(shape)
+  });
+}

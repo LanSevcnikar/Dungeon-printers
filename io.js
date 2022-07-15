@@ -32,10 +32,10 @@ function mouseWheel(event) {
 
 //on mouse pressed save current mouse position
 function mousePressed() {
-  if(mouseX > screenWidth - 450) return;
+  if (mouseX > screenWidth - 450) return;
   // if spacebar is not being pressed
   if (!keyIsDown(32)) {
-    if (app.selectedTool == 0 || app.selectedTool == 1) {
+    if (app.selectedTool == "rec" || app.selectedTool == "oct") {
       mousePrevious.x = mouseX;
       mousePrevious.y = mouseY;
       mousePrevious = screenToCam(mousePrevious);
@@ -45,7 +45,19 @@ function mousePressed() {
       //draw circle at mouse pressed with radious 10
     }
 
-    if (app.selectedTool == 4) {
+    if (app.selectedTool == "sel") {
+      mousePrevious.x = mouseX;
+      mousePrevious.y = mouseY;
+      mousePrevious = screenToCam(mousePrevious);
+    }
+
+    if (app.selectedTool == "mov") {
+      mousePrevious.x = mouseX;
+      mousePrevious.y = mouseY;
+      mousePrevious = screenToCam(mousePrevious);
+    }
+
+    if (app.selectedTool == "chm") {
       let temp = new Point(mouseX, mouseY);
       temp = screenToCam(temp);
       let closestPlayer = app.entities[0];
@@ -61,7 +73,7 @@ function mousePressed() {
       if (temp.distance(closestPlayer.location) > 1.5) {
         closestPlayer = null;
       }
-      console.log(closestPlayer);
+      //console.log(closestPlayer);
       app.selectedPlayer = closestPlayer;
     }
   }
@@ -69,19 +81,73 @@ function mousePressed() {
 
 //on mouse released set mouse previous values to NaN
 function mouseReleased() {
-  
-  if (app.selectedTool == 0) {
+  if (mouseX > screenWidth - 450) return;
+  if (app.selectedTool == "rec") {
     mouseRealeasedRectangle();
     updateLinesOfAllShapesOnLayer(app.selectedLayer);
   }
-  if (app.selectedTool == 1) {
+  if (app.selectedTool == "oct") {
     mouseRealeasedOcto();
     updateLinesOfAllShapesOnLayer(app.selectedLayer);
+  }
+  if (app.selectedTool == "sel") {
+    mouseReleasedSelect();
+  }
+  if (app.selectedTool == "mov") {
   }
 
   app.selectedPlayer = null;
   mousePrevious.x = NaN;
   mousePrevious.y = NaN;
+}
+
+function mouseReleasedSelect() {
+  app.selectedShapes = [];
+  let temp = new Point(mouseX, mouseY);
+  temp = screenToCam(temp);
+  //loop through all shapes in selected layer
+  for (let i = 0; i < app.layers[app.selectedLayer].shapes.length; i++) {
+    //set new variable to shape and loop through all points of current shape
+    let shape = app.layers[app.selectedLayer].shapes[i];
+
+    let topLeft = new Point(
+      min(mousePrevious.x, temp.x),
+      min(mousePrevious.y, temp.y)
+    );
+    let bottomRight = new Point(
+      max(mousePrevious.x, temp.x),
+      max(mousePrevious.y, temp.y)
+    );
+    let topRight = new Point(
+      max(mousePrevious.x, temp.x),
+      min(mousePrevious.y, temp.y)
+    );
+    let bottomLeft = new Point(
+      min(mousePrevious.x, temp.x),
+      max(mousePrevious.y, temp.y)
+    );
+
+    let square = new Shape([topLeft, topRight, bottomRight, bottomLeft]);
+    let contains = false;
+
+    for (let j = 0; j < shape.points.length; j++) {
+      if (isPointInShape(shape.points[j], square)) {
+        contains = true;
+      }
+    }
+    //loop through points of square
+    for (let j = 0; j < square.points.length; j++) {
+      if (isPointInShape(square.points[j], shape)) {
+        contains = true;
+      }
+    }
+
+    if (contains) {
+      app.selectedShapes.push(shape);
+    }
+  }
+
+  console.log(app.selectedShapes);
 }
 
 function mouseRealeasedRectangle() {
@@ -214,4 +280,23 @@ function importToJson() {
       );
     }
   };
+}
+
+function keyPressed() {
+  //check if key is delete
+  if (keyCode === DELETE) {
+    deleteSelected();
+  }
+}
+
+//when delete is clicked call function
+function deleteSelected() {
+  if (app.selectedShapes.length > 0) {
+    console.log(app.selectedShapes, "deleting them")
+    for (let i = 0; i < app.selectedShapes.length; i++) {
+
+      app.layers[app.selectedLayer].deleteShape(app.selectedShapes[i]);
+    }
+    app.selectedShapes = [];
+  }
 }

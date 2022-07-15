@@ -74,8 +74,9 @@ class Shape {
 }
 
 class Layer {
-  constructor(local_name) {
-    this.color = [240, 240, 240];
+  constructor(local_name, local_color) {
+    if(local_color == null) this.color = [240, 240, 240];
+    else this.color = local_color;
     this.name = local_name;
     this.shapes = [];
   }
@@ -95,12 +96,16 @@ class Layer {
       drawShape(shape, this);
     });
   }
+
+  deleteShape(shape){
+    this.shapes.splice(this.shapes.indexOf(shape), 1);
+  }
 }
 
 //function taht calculates the avergae of two colors
 function averageColor(color1, color2) {
-  console.log(color1, color2);
-  let average = [0, 0, 0];
+  //console.log(color1, color2);
+  let average = [0, 0, 0, color1[3]];
   for (let i = 0; i < 3; i++) {
     average[i] = (color1[i] + color2[i] * 3) / 4;
   }

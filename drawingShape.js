@@ -1,6 +1,7 @@
 //draw shape function, s - shape, l- layer
 function drawShape(s, l) {
   //loop through lines in shape object
+  stroke(l.color);
   for (let i = 0; i < s.lines.length; i++) {
     //draw line
     line(
@@ -11,6 +12,7 @@ function drawShape(s, l) {
     );
   }
 
+  //console.log(l)
   fill(averageColor(l.color, colour_background))
   noStroke();
   beginShape();

@@ -1,11 +1,26 @@
 //function to draw shape between current mouse position and previous mouse position
 function drawingOutlineNewShape() {
-  if (app.selectedTool == 0) {
+  if (app.selectedTool == "rec") {
     drawOutlineNewShapeRectangle();
   }
-  if (app.selectedTool == 1) {
+  if (app.selectedTool == "oct") {
     drawOutlineNewShapeOcto();
   }
+  if (app.selectedTool == "sel") {
+    drawOutlineSelect();
+  }
+}
+
+function drawOutlineSelect() {
+  let temp = new Point(mouseX, mouseY);
+  temp = screenToCam(temp);
+  let shape = new Shape([
+    new Point(mousePrevious.x, mousePrevious.y),
+    new Point(temp.x, mousePrevious.y),
+    temp,
+    new Point(mousePrevious.x, temp.y),
+  ]);
+  drawShape(shape, new Layer("Select", color_select));
 }
 
 function drawOutlineNewShapeRectangle() {
@@ -49,8 +64,8 @@ function drawOutlineNewShapeOcto() {
 //function to draw grid on screen
 function drawGrid() {
   strokeWeight(0.5);
-  stroke(140)
-  fill(140)
+  stroke(140);
+  fill(140);
   // LOOP BETWEEN -10 AND 10
   let minX = Math.floor(cam.x) - 4;
   let maxX = Math.floor(cam.x + screenWidth / screenSizeOfGrid) + 4;
