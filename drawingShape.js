@@ -11,6 +11,7 @@ function drawShape(s, l) {
     );
   }
 
+  fill(averageColor(l.color, colour_background))
   noStroke();
   beginShape();
   //loop through points in shape

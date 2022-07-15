@@ -49,7 +49,8 @@ function drawOutlineNewShapeOcto() {
 //function to draw grid on screen
 function drawGrid() {
   strokeWeight(0.5);
-  stroke(colour_background_lines);
+  stroke(140)
+  fill(140)
   // LOOP BETWEEN -10 AND 10
   let minX = Math.floor(cam.x) - 4;
   let maxX = Math.floor(cam.x + screenWidth / screenSizeOfGrid) + 4;

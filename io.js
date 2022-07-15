@@ -32,6 +32,7 @@ function mouseWheel(event) {
 
 //on mouse pressed save current mouse position
 function mousePressed() {
+  if(mouseX > screenWidth - 450) return;
   // if spacebar is not being pressed
   if (!keyIsDown(32)) {
     if (app.selectedTool == 0 || app.selectedTool == 1) {
@@ -68,6 +69,7 @@ function mousePressed() {
 
 //on mouse released set mouse previous values to NaN
 function mouseReleased() {
+  
   if (app.selectedTool == 0) {
     mouseRealeasedRectangle();
     updateLinesOfAllShapesOnLayer(app.selectedLayer);

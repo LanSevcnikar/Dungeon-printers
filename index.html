@@ -31,21 +31,26 @@
               <input type="checkbox" v-model="freeDraw">
             </div>
           </div>
+          <div>______________________</div>
           <br>
           LAYERS
           <div class="layers">
 
             <div v-for="(layer,index) in layers">
               <div :class="{'selectedLayer' : selectedLayer == index}" v-on:click="selectedLayer = index">
+                <input type="number" min="0" max="255" step="1" class="RGBInput" v-model="layer.color[0]">
+                <input type="number" min="0" max="255" step="1" class="RGBInput" v-model="layer.color[1]">
+                <input type="number" min="0" max="255" step="1" class="RGBInput" v-model="layer.color[2]">
                 {{layer.name}}
-                <input type="number" min="0" max="255" step="1" v-model="layer.color">
               </div>
+              <br>
             </div>
           </div>
-          <button>
-            Add layer <input type="text">
+          <button v-on:click="addLayer()">
+            Add layer 
           </button>
-          <br> <br>
+          <input type="text" v-model="addedLayer" placeholder="Name">
+          <br> <div>______________________</div> <br>
           ENTITIES
           <div class="entities">
             <input type="text" placeholder="name" v-model="addedEntity.name">
@@ -59,7 +64,7 @@
                 {{entity.name}}
               </div>
             </div>
-            <br> <br>
+            <br> <div>______________________</div> <br>
             <button onclick="exportToJson()">Save map</button>
             <input type="file" id="inputJSONFile">
             <button onclick="importToJson()">Load map</button>

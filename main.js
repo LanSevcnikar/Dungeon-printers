@@ -6,19 +6,16 @@ let app = createApp({
       selectedTool: 4,
       offsetForDrawing: 0,
       freeDraw: false,
-      layers: [new Layer("Layer 1"), new Layer("Base")],
+      layers: [new Layer("Layer 1")],
       selectedLayer: 0,
       selectedPlayer: null,
       previouslySelectedPlayer: null,
-      entities: [
-        new Player("Quinn", [90, 10, 180], 6, 6),
-        new Player("Erin", [90, 10, 180], 12, 8),
-        new Player("Lunk", [90, 10, 180]),
-      ],
+      entities: [],
       addedEntity: {
         name: "",
         color: [],
       },
+      addedLayer: "",
     };
   },
   methods: {
@@ -28,13 +25,19 @@ let app = createApp({
     addEntity(){
       this.entities.push(new Player(this.addedEntity.name, this.addedEntity.color));
       console.log(this.entities);
+      this.addEntity.name = "";
+      this.addEntity.color = [];
+    },
+    addLayer(){
+      this.layers.push(new Layer(this.addedLayer));
+      this.addLayer = "" ;
     }
   }
 }).mount("#app");
 
 const ERROR_DELTA = 0.0001;
 
-const colour_background = (51, 50, 50);
+const colour_background = [51, 50, 50];
 const colour_lines = (232, 233, 235);
 const colour_background_lines = (132, 133, 135);
 
@@ -84,6 +87,8 @@ function draw() {
 
   //text in top corner to show cam location and scale  and grid size big font white font
   //set font to white
+  fill(140)
+  stroke(140)
   textSize(20);
   text("cam Location: (" + cam.x + "," + cam.y + ")", 10, 20);
   text("Grid Size: " + screenSizeOfGrid, 10, 60);

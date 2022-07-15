@@ -75,7 +75,7 @@ class Shape {
 
 class Layer {
   constructor(local_name) {
-    this.color = 240;
+    this.color = [240, 240, 240];
     this.name = local_name;
     this.shapes = [];
   }
@@ -99,11 +99,12 @@ class Layer {
 
 //function taht calculates the avergae of two colors
 function averageColor(color1, color2) {
+  console.log(color1, color2);
   let average = [0, 0, 0];
   for (let i = 0; i < 3; i++) {
-    average[i] = (color1[i] + color2[i]) / 2;
+    average[i] = (color1[i] + color2[i] * 3) / 4;
   }
-  return (average[0], average[1], average[2]);
+  return average;
 }
 
 //function to check if two points are the same called isSamePoint but for doublkes
