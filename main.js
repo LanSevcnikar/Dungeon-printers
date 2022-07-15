@@ -9,13 +9,27 @@ let app = createApp({
       layers: [new Layer("Layer 1"), new Layer("Base")],
       selectedLayer: 0,
       selectedPlayer: null,
-      players: [
+      previouslySelectedPlayer: null,
+      entities: [
         new Player("Quinn", [90, 10, 180], 6, 6),
         new Player("Erin", [90, 10, 180], 12, 8),
         new Player("Lunk", [90, 10, 180]),
       ],
+      addedEntity: {
+        name: "",
+        color: [],
+      },
     };
   },
+  methods: {
+    deleteEntity(entity){
+      this.entities.splice(this.entities.indexOf(entity), 1);
+    },
+    addEntity(){
+      this.entities.push(new Player(this.addedEntity.name, this.addedEntity.color));
+      console.log(this.entities);
+    }
+  }
 }).mount("#app");
 
 const ERROR_DELTA = 0.0001;
@@ -64,7 +78,7 @@ function draw() {
   }
 
   //show all players
-  app.players.forEach((player) => {
+  app.entities.forEach((player) => {
     player.draw();
   });
 
@@ -87,3 +101,4 @@ function updateSelectedPlayerLocation(player) {
   temp = snapToInt(temp);
   player.location = temp;
 }
+

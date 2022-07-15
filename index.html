@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 
-<head >
+<head>
   <script src="https://unpkg.com/vue@3"></script>
   <script setup src="setup.js"></script>
   <title>
@@ -11,128 +11,134 @@
 
 <body>
   <div id="app">
-    <!-- Add a topbar with buttons exactly 30 pixels tall -->
-    <div class="topbar">
-      <div class="subtopbar">
-        <button >
-          {{ message }}
-        </button>
-        
-      </div>
-    </div>
-    
-    
+
+
     <div class="sidebar">
       <div class="subsidebar">
-      <div class="closeSubBar">
-        <div class="toolSelect" style="display: flex;">
-          TOOL:
-          <br>
-          <select name="toolSelect" id="" v-model="selectedTool">
-            <option value="0">Rectengle</option>
-            <option value="1">Octagon</option>
-            <option value="2">Select</option>
-            <option value="3">Free line</option>
-            <option value="4">Character mover</option>
-          </select>
-          <div v-if="selectedTool < 2">
-            <input type="number" max="0.5" min="0" step="0.025" v-model="offsetForDrawing">
-            <input type="checkbox" v-model="freeDraw">
-          </div>
-        </div>
-        <br>
-        LAYERS
-        <div class="layers">
-
-          <div v-for="(layer,index) in layers">
-            <div :class="{'selectedLayer' : selectedLayer == index}" v-on:click="selectedLayer = index">
-              {{layer.name}}
-              <input type="number" min="0" max="255" step="1" v-model="layer.color">
+        <div class="closeSubBar">
+          <div class="toolSelect" style="display: flex;">
+            TOOL:
+            <br>
+            <select name="toolSelect" id="" v-model="selectedTool">
+              <option value="0">Rectengle</option>
+              <option value="1">Octagon</option>
+              <option value="2">Select</option>
+              <option value="3">Free line</option>
+              <option value="4">Character mover</option>
+            </select>
+            <div v-if="selectedTool < 2">
+              <input type="number" max="0.5" min="0" step="0.025" v-model="offsetForDrawing">
+              <input type="checkbox" v-model="freeDraw">
             </div>
+          </div>
+          <br>
+          LAYERS
+          <div class="layers">
+
+            <div v-for="(layer,index) in layers">
+              <div :class="{'selectedLayer' : selectedLayer == index}" v-on:click="selectedLayer = index">
+                {{layer.name}}
+                <input type="number" min="0" max="255" step="1" v-model="layer.color">
+              </div>
+            </div>
+          </div>
+          <button>
+            Add layer <input type="text">
+          </button>
+          <br> <br>
+          ENTITIES
+          <div class="entities">
+            <input type="text" placeholder="name" v-model="addedEntity.name">
+            <input type="number" class="RGBInput" min="0" max="255" step="1" v-model="addedEntity.color[0]">
+            <input type="number" class="RGBInput" min="0" max="255" step="1" v-model="addedEntity.color[1]">
+            <input type="number" class="RGBInput" min="0" max="255" step="1" v-model="addedEntity.color[2]">
+            <button v-on:click="addEntity()">Add entity</button>
+            <div v-for=" (entity,index) in entities">
+              <div :class="{'selectedEntity' : selectedEntity == index}" v-on:click="selectedEntity = index">
+                <button v-on:click="deleteEntity(entity)"> delete</button>
+                {{entity.name}}
+              </div>
+            </div>
+            <br> <br>
+            <button onclick="exportToJson()">Save map</button>
+            <input type="file" id="inputJSONFile">
+            <button onclick="importToJson()">Load map</button>
           </div>
         </div>
       </div>
     </div>
-  </div>  
-  </div>
 
 
-  
-  <script src="p5.js" type="text/javascript"></script>
-  <script src="camera.js" type="text/javascript"></script>
-  <script src="io.js" type="text/javascript"></script>
-  <script src="geometry.js" type="text/javascript"></script>
-  <script src="players.js" type="text/javascript"></script>
-  <script src="drawingShape.js" type="text/javascript"></script>
-  <script src="drawingOutlines.js" type="text/javascript"></script>
-  <script src="main.js" type="text/javascript"></script>
 
-  <style>
-    body {
-      padding: 0;
-      margin: 0;
-    }
+    <script src="p5.js" type="text/javascript"></script>
+    <script src="camera.js" type="text/javascript"></script>
+    <script src="io.js" type="text/javascript"></script>
+    <script src="geometry.js" type="text/javascript"></script>
+    <script src="players.js" type="text/javascript"></script>
+    <script src="drawingShape.js" type="text/javascript"></script>
+    <script src="drawingOutlines.js" type="text/javascript"></script>
+    <script src="main.js" type="text/javascript"></script>
 
-    canvas {
-      vertical-align: top;
-    }
+    <style>
+      body {
+        padding: 0;
+        margin: 0;
+      }
 
-    .topbar {
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 50px;
-      background-color: rgb(41, 40, 40);
-      z-index: 1;
-      display: flex;
-      justify-content: space-evenly;
-      position: fixed;
-    }
+      canvas {
+        vertical-align: top;
+      }
 
-    .subtopbar {
-      width: 70%;
-      display: flex;
-      justify-content: space-evenly;
-    }
+      .topbar {
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 50px;
+        background-color: rgb(41, 40, 40);
+        z-index: 1;
+        display: flex;
+        justify-content: space-evenly;
+        position: fixed;
+      }
 
-    .sidebar {
-      top: 0;
-      right: 0;
-      height: 100vh;
-      width: 450px;
-      background-color: rgb(41,40,40);
-      position: fixed;
-      z-index: 2;
-    }
+      .subtopbar {
+        width: 70%;
+        display: flex;
+        justify-content: space-evenly;
+      }
 
-    button {
-      background-color: rgb(0, 0, 0, 0);
-      stroke: none;
-      border: none;
-      color: white;
-      font-size: 20px;
-      font-family: 'Roboto', sans-serif;
-      padding: 0;
-      margin: 0;
-    }
+      .sidebar {
+        top: 0;
+        right: 0;
+        height: 100vh;
+        width: 450px;
+        background-color: rgb(41, 40, 40);
+        position: fixed;
+        z-index: 2;
+      }
 
-    .closeSubBar {
-      background-color: rgb(0, 0, 0, 0);
-      stroke: none;
-      border: none;
-      color: white;
-      font-size: 15px;
-      font-family: 'Roboto', sans-serif;
-      padding: 20px;
-      padding-top: 50px;
-      margin: 0;
-    }
 
-    .selectedLayer{
-      /* make text bold */
-      font-weight: bold;
-    }
-  </style>
+      .closeSubBar {
+        background-color: rgb(0, 0, 0, 0);
+        stroke: none;
+        border: none;
+        color: white;
+        font-size: 15px;
+        font-family: 'Roboto', sans-serif;
+        padding: 20px;
+        padding-top: 50px;
+        margin: 0;
+      }
+
+      .selectedLayer {
+        /* make text bold */
+        font-weight: bold;
+      }
+
+      .RGBInput {
+        width: 40px;
+      }
+    </style>
 
 
 </body>

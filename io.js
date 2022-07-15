@@ -44,17 +44,20 @@ function mousePressed() {
       //draw circle at mouse pressed with radious 10
     }
 
-    if(app.selectedTool == 4){
+    if (app.selectedTool == 4) {
       let temp = new Point(mouseX, mouseY);
       temp = screenToCam(temp);
-      let closestPlayer = app.players[0];
+      let closestPlayer = app.entities[0];
       //loop through players anmd if closer, change closest player
-      for(let i = 1; i < app.players.length; i++){
-        if(temp.distance(app.players[i].location) < temp.distance(closestPlayer.location)){
-          closestPlayer = app.players[i];
+      for (let i = 1; i < app.entities.length; i++) {
+        if (
+          temp.distance(app.entities[i].location) <
+          temp.distance(closestPlayer.location)
+        ) {
+          closestPlayer = app.entities[i];
         }
       }
-      if(temp.distance(closestPlayer.location) > 1.5){
+      if (temp.distance(closestPlayer.location) > 1.5) {
         closestPlayer = null;
       }
       console.log(closestPlayer);
@@ -129,7 +132,7 @@ function mouseRealeasedOcto() {
   temp = screenToCam(temp);
   temp.subtract(mousePrevious);
   let r = temp.magnitude();
-  if(!app.freeDraw){
+  if (!app.freeDraw) {
     r = Math.round(r);
   }
   let a = PI / 8;
@@ -143,7 +146,6 @@ function mouseRealeasedOcto() {
     a += PI / 4;
   }
 
-  
   let shape = new Shape(points);
   app.layers[app.selectedLayer].addShape(shape);
   mousePrevious.x = NaN;
@@ -157,4 +159,55 @@ function windowResized() {
   screenWidth = window.innerWidth;
   console.log(screenHeight, screenWidth);
   resizeCanvas(screenWidth, screenHeight);
+}
+
+function exportToJson() {
+  let exported = {};
+  console.log(exported);
+  exported.selectedTool = app.selectedTool;
+  exported.offsetForDrawing = app.offsetForDrawing;
+  exported.freeDraw = app.freeDraw;
+  exported.layers = app.layers;
+  exported.selectedLayer = app.selectedLayer;
+  exported.selectedPlayer = app.selectedPlayer;
+  exported.previouslySelectedPlayer = app.previouslySelectedPlayer;
+  exported.entities = app.entities;
+  saveJSON(exported, "map.json");
+}
+
+function importToJson() {
+  let file = document.getElementById("inputJSONFile").files[0];
+  let reader = new FileReader();
+
+  reader.readAsText(file);
+
+  reader.onload = function () {
+    let data = JSON.parse(reader.result);
+    console.log(data);
+
+    app.selectedTool = data.selectedTool;
+    app.offsetForDrawing = data.offsetForDrawing;
+    app.freeDraw = data.freeDraw;
+    app.layers = [];
+    for (let i = 0; i < data.layers.length; i++) {
+      app.layers.push(new Layer(data.layers[i].name));
+      for (let j = 0; j < data.layers[i].shapes.length; j++) {
+        app.layers[i].addShape(data.layers[i].shapes[j]);
+      }
+    }
+    app.selectedLayer = data.selectedLayer;
+    app.selectedPlayer = data.selectedPlayer;
+    app.previouslySelectedPlayer = data.previouslySelectedPlayer;
+    app.entities = [];
+    for (let i = 0; i < data.entities.length; i++) {
+      app.entities.push(
+        new Player(
+          data.entities[i].name,
+          data.entities[i].color,
+          data.entities[i].location.x,
+          data.entities[i].location.y
+        )
+      );
+    }
+  };
 }
