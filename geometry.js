@@ -24,8 +24,8 @@ class Point {
   //normalize function to normalize the point
   normalize() {
     let mag = sqrt(this.x * this.x + this.y * this.y);
-    this.x = (this.x) / mag;
-    this.y = (this.y) / mag;
+    this.x = this.x / mag;
+    this.y = this.y / mag;
   }
   //function to return the magnitudr of the point
   magnitude() {
@@ -37,16 +37,28 @@ class Point {
     this.y *= scalar;
   }
   //draw function to draw the point
-  draw() {
+  draw(i) {
+    if(i == null) i = 5;
     //draw eclipse at coordinates
     //console.log(this)
-    ellipse(camToScreen(this).x, camToScreen(this).y, 5, 5);
+    ellipse(camToScreen(this).x, camToScreen(this).y, i, i );
   }
   //distance function between this and another point
   distance(p) {
     return sqrt(
       (this.x - p.x) * (this.x - p.x) + (this.y - p.y) * (this.y - p.y)
     );
+  }
+  //function to rotate point by x degrees around 0,0
+  rotate(x) {
+    let a = x * PI / 180;
+    let newX = this.x * cos(a) - this.y * sin(a);
+    let newY = this.x * sin(a) + this.y * cos(a);
+    this.x = newX;
+    this.y = newY;
+  }
+  angleBetween(p){
+    return atan2(this.y - p.y, this.x - p.x); 
   }
 }
 
@@ -75,7 +87,7 @@ class Shape {
 
 class Layer {
   constructor(local_name, local_color) {
-    if(local_color == null) this.color = [240, 240, 240];
+    if (local_color == null) this.color = [240, 240, 240];
     else this.color = local_color;
     this.name = local_name;
     this.shapes = [];
@@ -90,14 +102,14 @@ class Layer {
   drawAllShapes() {
     //set fill and stroke according to internal data
     this.shapes.forEach((shape) => {
-      fill((this.color+130)/4);
+      fill((this.color + 130) / 4);
       stroke(this.color);
       strokeWeight(2);
       drawShape(shape, this);
     });
   }
 
-  deleteShape(shape){
+  deleteShape(shape) {
     this.shapes.splice(this.shapes.indexOf(shape), 1);
   }
 }
@@ -194,14 +206,17 @@ function findPointOfCollision(p1, p2, p3, p4) {
   //console.log(p1, p2, p3, p4, x, y);
 
   //check if new point is between p1 and p2 and p3 and p4
-  if (y <= max(p1.y, p2.y) && y >= min(p1.y, p2.y)) {
-    if (x <= max(p1.x, p2.x) && x >= min(p1.x, p2.x)) {
-      if (y <= max(p3.y, p4.y) && y >= min(p3.y, p4.y)) {
-        if (x <= max(p3.x, p4.x) && x >= min(p3.x, p4.x)) {
-          return new Point(x, y);
-        }
-      }
-    }
+  if (
+    y <= max(p1.y, p2.y) + ERROR_DELTA &&
+    y >= min(p1.y, p2.y) - ERROR_DELTA &&
+    x <= max(p1.x, p2.x) + ERROR_DELTA &&
+    x >= min(p1.x, p2.x) - ERROR_DELTA &&
+    y <= max(p3.y, p4.y) + ERROR_DELTA &&
+    y >= min(p3.y, p4.y) - ERROR_DELTA &&
+    x <= max(p3.x, p4.x) + ERROR_DELTA &&
+    x >= min(p3.x, p4.x) - ERROR_DELTA
+  ) {
+    return new Point(x, y);
   }
 
   return null;
