@@ -73,6 +73,7 @@ function updateLinesOfAllShapesOnLayer(selectedLayer) {
 }
 
 function updateLinesOfShape(selectedLayer, s) {
+  s.lines = [];
   let l = app.layers[selectedLayer];
   for (let i = 0; i < s.points.length - 1; i++) {
     //if point is not the last point

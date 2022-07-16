@@ -18,7 +18,7 @@ let app = createApp({
       //Data to be saved in the file
       selections: {
         showGrid: true,
-        showDevTools: false,
+        showDevTools: true,
         selectedTool: "rec", //
         offsetForDrawing: 0.2, //
         freeDraw: false, //
@@ -71,13 +71,13 @@ let app = createApp({
     resetAllData() {
       this.selections = {
         showGrid: true,
-        showDevTools: false,
+        showDevTools: true  ,
         selectedTool: "rec", //
         offsetForDrawing: 0.2, //
         freeDraw: false, //
         selectedLayer: 0, //
       };
-      
+
       this.layers = [new Layer("Layer 1")];
       this.entities = [];
       this.selectedShapes = [];
@@ -170,6 +170,7 @@ function draw() {
   //show all players
   app.entities.forEach((player) => {
     player.draw();
+    player.findSightOfPlayer();
   });
 
   //text in top corner to show cam location and scale  and grid size big font white font
