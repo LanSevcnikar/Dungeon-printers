@@ -23,6 +23,8 @@ let app = createApp({
         offsetForDrawing: 0.2, //
         freeDraw: false, //
         selectedLayer: 0, //
+        showFieldOfView: false, //
+        showOutsideView: true, //
       },
 
       //Really importaint things
@@ -35,7 +37,8 @@ let app = createApp({
       previouslySelectedPlayer: null,
       addedEntity: {
         name: "",
-        color: [],
+        color: [0, 0, 0],
+        isNPC: false,
       },
       addedLayer: "",
     };
@@ -46,9 +49,15 @@ let app = createApp({
     },
     addEntity() {
       this.entities.push(
-        new Player(this.addedEntity.name, this.addedEntity.color)
+        new Player(
+          this.addedEntity.name,
+          this.addedEntity.color,
+          this.addedEntity.isNPC,
+          5,
+          5
+        )
       );
-      console.log(this.entities);
+      //console.log(this.entities);
       this.addEntity.name = "";
       this.addEntity.color = [];
     },
@@ -71,11 +80,13 @@ let app = createApp({
     resetAllData() {
       this.selections = {
         showGrid: true,
-        showDevTools: true  ,
+        showDevTools: true,
         selectedTool: "rec", //
         offsetForDrawing: 0.2, //
         freeDraw: false, //
         selectedLayer: 0, //
+        showFieldOfView: false, //
+        showOutsideView: true, //
       };
 
       this.layers = [new Layer("Layer 1")];
@@ -86,14 +97,15 @@ let app = createApp({
       this.previouslySelectedPlayer = null;
       this.addedEntity = {
         name: "",
-        color: [],
+        color: [0,0,0],
+        isNPC: false,
       };
       this.addedLayer = "";
     },
   },
 }).mount("#app");
 
-const ERROR_DELTA = 0.0001;
+const ERROR_DELTA = 0.00001;
 
 const colour_background = [51, 50, 50];
 const color_select = [60, 60, 230, 180];
@@ -139,6 +151,7 @@ function setup() {
   stroke(colour_lines);
   strokeWeight(1);
   fill(255);
+  //loop through all players
 }
 
 // p5js main function
@@ -150,29 +163,41 @@ function draw() {
     moveSelectedShapes();
   }
   app.layers.forEach((layer) => {
-    layer.drawAllShapes();
+    layer.drawAllShapesBase();
   });
   //if mouse pressed not NaN draw circle with radious 3 at that location
   strokeWeight(2);
   if (!isNaN(mousePrevious.x)) {
     drawingOutlineNewShape();
   }
-  if (app.selections.showGrid) {
-    drawGrid();
-  }
   if (app.selectedPlayer != null) {
     updateSelectedPlayerLocation(app.selectedPlayer);
   }
   app.selectedShapes.forEach((shape) => {
-    drawShape(shape, new Layer("Select", color_select));
+    drawShapeBase(shape, new Layer("Select", color_select));
   });
+
+  if (app.selections.showFieldOfView) {
+    app.entities.forEach((player) => {
+      player.drawShapeOfSight([150, 150, 150, 255]);
+    });
+  }
+  app.layers.forEach((layer) => {
+    layer.drawAllShapesOutline();
+  });
+
+  if (!app.selections.showOutsideView) {
+    hideOutsideView();
+  }
 
   //show all players
   app.entities.forEach((player) => {
     player.draw();
-    player.findSightOfPlayer();
   });
 
+  if (app.selections.showGrid) {
+    drawGrid();
+  }
   //text in top corner to show cam location and scale  and grid size big font white font
   //set font to white
   if (app.selections.showDevTools == false) return;
@@ -193,6 +218,11 @@ function updateSelectedPlayerLocation(player) {
   );
   temp = screenToCam(temp);
   temp = snapToInt(temp);
+  if (temp.x != player.location.x || temp.y != player.location.y) {
+    player.location = temp;
+    player.findSightOfPlayer();
+    console.log("Player has moved");
+  }
   player.location = temp;
 }
 
@@ -203,5 +233,19 @@ function moveSelectedShapes() {
   temp = snapToInt(temp);
   app.selectedShapes.forEach((shape) => {
     console.log(shape);
+  });
+}
+
+function updateAllThings() {
+  //loop through all layers
+  app.layers.forEach((layer, index) => {
+    updateLinesOfAllShapesOnLayer(index);
+  });
+
+  console.log("update all things", app.layers);
+
+  //loop through all entities and update their lines
+  app.entities.forEach((entity) => {
+    entity.findSightOfPlayer();
   });
 }

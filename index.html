@@ -19,7 +19,9 @@
           GENERAL <br>
           <button v-on:click="resetAllData()">Clear all</button> |
           Grid <input type="checkbox" v-model="selections.showGrid"> |
-          Developer <input type="checkbox" v-model="selections.showDevTools">
+          Developer <input type="checkbox" v-model="selections.showDevTools"> <br>
+          Show FOV <input type="checkbox" v-model="selections.showFieldOfView"> |
+          Show Outside <input type="checkbox" v-model="selections.showOutsideView">
           <div>______________________</div>
           <br>
           <div class="toolSelect" style="display: flex;">
@@ -68,11 +70,17 @@
             <input type="number" class="RGBInput" min="0" max="255" step="1" v-model="addedEntity.color[0]">
             <input type="number" class="RGBInput" min="0" max="255" step="1" v-model="addedEntity.color[1]">
             <input type="number" class="RGBInput" min="0" max="255" step="1" v-model="addedEntity.color[2]">
+            NPC <input type="checkbox" v-model="addedEntity.isNPC">
             <button v-on:click="addEntity()">Add entity</button>
+            <br> <br>
             <div v-for=" (entity,index) in entities">
               <div :class="{'selectedEntity' : selectedEntity == index}" v-on:click="selectedEntity = index">
                 <button v-on:click="deleteEntity(entity)"> delete</button>
+                <input type="number" class="RGBInput" min="0" max="255" step="1" v-model="entities[index].color[0]">
+                <input type="number" class="RGBInput" min="0" max="255" step="1" v-model="entities[index].color[1]">
+                <input type="number" class="RGBInput" min="0" max="255" step="1" v-model="entities[index].color[2]">
                 {{entity.name}}
+                <i v-if="entity.isNPC">(NPC)</i>
               </div>
             </div>
             <br>

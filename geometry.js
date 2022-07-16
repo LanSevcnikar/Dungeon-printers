@@ -99,13 +99,22 @@ class Layer {
   }
 
   //draweAllShapes function
-  drawAllShapes() {
+  drawAllShapesBase() {
     //set fill and stroke according to internal data
     this.shapes.forEach((shape) => {
       fill((this.color + 130) / 4);
       stroke(this.color);
       strokeWeight(2);
-      drawShape(shape, this);
+      drawShapeBase(shape, this);
+    });
+  }
+
+  drawAllShapesOutline() {
+    this.shapes.forEach((shape) => {
+      fill((this.color + 130) / 4);
+      stroke(this.color);
+      strokeWeight(2);
+      drawShapeOutline(shape, this);
     });
   }
 

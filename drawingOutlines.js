@@ -20,7 +20,7 @@ function drawOutlineSelect() {
     temp,
     new Point(mousePrevious.x, temp.y),
   ]);
-  drawShape(shape, new Layer("Select", color_select));
+  drawShapeBase(shape, new Layer("Select", color_select));
 }
 
 function drawOutlineNewShapeRectangle() {
@@ -35,7 +35,7 @@ function drawOutlineNewShapeRectangle() {
     temp,
     new Point(mousePrevious.x, temp.y),
   ]);
-  drawShape(shape, new Layer(colour_lines, 2));
+  drawShapeBase(shape, new Layer("base", colour_lines, 2));
 }
 
 function drawOutlineNewShapeOcto() {
@@ -58,7 +58,7 @@ function drawOutlineNewShapeOcto() {
   }
 
   let shape = new Shape(points);
-  drawShape(shape, new Layer(colour_lines, 2));
+  drawShapeBase(shape, new Layer(colour_lines, 2));
 }
 
 //function to draw grid on screen

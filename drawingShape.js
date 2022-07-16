@@ -1,6 +1,18 @@
 //draw shape function, s - shape, l- layer
-function drawShape(s, l) {
+function drawShapeBase(s, l) {
   //loop through lines in shape object
+  //console.log(l)
+  fill(averageColor(l.color, colour_background));
+  noStroke();
+  beginShape();
+  //loop through points in shape
+  for (let i = 0; i < s.points.length; i++) {
+    vertex(camToScreen(s.points[i]).x, camToScreen(s.points[i]).y);
+  }
+  endShape(CLOSE);
+}
+
+function drawShapeOutline(s, l) {
   stroke(l.color);
   for (let i = 0; i < s.lines.length; i++) {
     //draw line
@@ -11,16 +23,6 @@ function drawShape(s, l) {
       camToScreen(s.lines[i][1]).y
     );
   }
-
-  //console.log(l)
-  fill(averageColor(l.color, colour_background))
-  noStroke();
-  beginShape();
-  //loop through points in shape
-  for (let i = 0; i < s.points.length; i++) {
-    vertex(camToScreen(s.points[i]).x, camToScreen(s.points[i]).y);
-  }
-  endShape(CLOSE);
 }
 
 //function to check if a point is in some shape
@@ -68,7 +70,7 @@ function isPointInShape(p, s) {
 function updateLinesOfAllShapesOnLayer(selectedLayer) {
   //loop through all shapes on selected layer
   for (let i = 0; i < app.layers[selectedLayer].shapes.length; i++) {
-    updateLinesOfShape(selectedLayer,  app.layers[selectedLayer].shapes[i]);
+    updateLinesOfShape(selectedLayer, app.layers[selectedLayer].shapes[i]);
   }
 }
 

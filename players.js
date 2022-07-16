@@ -2,7 +2,8 @@
 class Player {
   //constructor, giving a name and a color
 
-  constructor(name, color, x, y) {
+  constructor(name, color, npc, x, y) {
+    this.isNPC = npc;
     this.name = name;
     this.color = [color[0], color[1], color[2]];
     //if x and y are not null then set location to that
@@ -12,10 +13,13 @@ class Player {
     } else {
       this.location = new Point(0, 0);
     }
+    this.shapeOfSight = [];
+    this.findSightOfPlayer();
   }
 
   //show function to show the player
   draw() {
+    noStroke();
     fill(this.color);
     //text(this.name, 10, 10);
     //make ellipse at location using camToScreen function
@@ -35,6 +39,7 @@ class Player {
   }
 
   findSightOfPlayer() {
+    //console.log("Finding sight of player");
     //loop through all shapes in layer 0
     let playerPosition = new Point(
       this.location.x + 0.5,
@@ -55,7 +60,7 @@ class Player {
             //   camToScreen(p).y
             // );
             //loop through all shapes
-            let points = [p];
+            let points = [new Point(p.x, p.y)];
             for (let l2 = 0; l2 < app.layers.length; l2++) {
               for (let s2 = 0; s2 < app.layers[l2].shapes.length; s2++) {
                 //loop through all lines
@@ -63,10 +68,10 @@ class Player {
                 for (let m = 0; m < shape.lines.length; m++) {
                   if (
                     shape.lines[m][0].x == null ||
-                    shape.lines[m][0].y == null || 
+                    shape.lines[m][0].y == null ||
                     shape.lines[m][1].x == null ||
                     shape.lines[m][1].y == null
-                  ){ 
+                  ) {
                     continue;
                   }
 
@@ -189,18 +194,55 @@ class Player {
     allPoints.sort(function (a, b) {
       return playerPosition.angleBetween(a) - playerPosition.angleBetween(b);
     });
+    if (allPoints.length < 3) {
+      return;
+    }
 
-    //draw shape defined by all the points
-    fill(255,255,255,100);
-    beginShape();
+    //increase the distance between each point and playerlocation by 0.1
     for (let i = 0; i < allPoints.length; i++) {
+      allPoints[i].subtract(playerPosition);
+      let temp = new Point(allPoints[i].x, allPoints[i].y);
+      temp.setmag(0.001);
+      allPoints[i].add(temp);
+      allPoints[i].add(playerPosition);
+    }
+
+    this.shapeOfSight = [...allPoints];
+    //console.log(allPoints);
+  }
+
+  drawShapeOfSight(color) {
+    //draw shape defined by all the points
+    fill(color);
+    beginShape();
+    for (let i = 0; i < this.shapeOfSight.length; i++) {
       vertex(
-        camToScreen(allPoints[i]).x,
-        camToScreen(allPoints[i]).y
+        camToScreen(this.shapeOfSight[i]).x,
+        camToScreen(this.shapeOfSight[i]).y
       );
     }
     endShape(CLOSE);
 
-    //console.log(allPoints);
+    //$$console.log(this.shapeOfSight);
   }
+}
+
+function hideOutsideView() {
+  noStroke();
+  fill(colour_background[0], colour_background[1], colour_background[2], 230);
+  beginShape();
+  vertex(0, 0);
+  vertex(0, screenHeight);
+  vertex(screenWidth, screenHeight);
+  vertex(screenWidth, 0);
+  //loop through entities
+  app.entities.forEach(function (entity) {
+    beginContour();
+    //loop through all points of dield of view in entity
+    entity.shapeOfSight.forEach(function (point) {
+      vertex(camToScreen(point).x, camToScreen(point).y);
+    });
+    endContour();
+  });
+  endShape(CLOSE);
 }

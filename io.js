@@ -85,17 +85,17 @@ function mouseReleased() {
   if (mouseX > screenWidth - 450) return;
   if (app.selections.selectedTool == "rec") {
     mouseRealeasedRectangle();
-    updateLinesOfAllShapesOnLayer(app.selections.selectedLayer);
   }
   if (app.selections.selectedTool == "oct") {
     mouseRealeasedOcto();
-    updateLinesOfAllShapesOnLayer(app.selections.selectedLayer);
   }
   if (app.selections.selectedTool == "sel") {
     mouseReleasedSelect();
   }
   if (app.selections.selectedTool == "mov") {
   }
+
+  updateAllThings();
 
   app.selectedPlayer = null;
   mousePrevious.x = NaN;
@@ -148,7 +148,7 @@ function mouseReleasedSelect() {
     }
   }
 
-  console.log(app.selectedShapes);
+  //console.log(app.selectedShapes);
 }
 
 function mouseRealeasedRectangle() {
@@ -225,10 +225,10 @@ function mouseRealeasedOcto() {
 
 //when window size changes, adjust p5 canvas accordingly
 function windowResized() {
-  console.log("Window was resized");
+  //console.log("Window was resized");
   screenHeight = window.innerHeight;
   screenWidth = window.innerWidth;
-  console.log(screenHeight, screenWidth);
+  //console.log(screenHeight, screenWidth);
   resizeCanvas(screenWidth, screenHeight);
 }
 
@@ -244,7 +244,7 @@ function importToJson() {
 
   reader.onload = function () {
     let data = JSON.parse(reader.result);
-    console.log(data);
+    //console.log(data);
 
     loadFromJson(data);
   };
@@ -294,7 +294,7 @@ function keyPressed() {
 //when delete is clicked call function
 function deleteSelected() {
   if (app.selectedShapes.length > 0) {
-    console.log(app.selectedShapes, "deleting them")
+    //console.log(app.selectedShapes, "deleting them")
     for (let i = 0; i < app.selectedShapes.length; i++) {
 
       app.layers[app.selections.selectedLayer].deleteShape(app.selectedShapes[i]);
