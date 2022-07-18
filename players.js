@@ -19,6 +19,16 @@ class Player {
 
   //show function to show the player
   draw() {
+    if (this.isNPC) {
+      if (
+        app.selections.showFieldOfView ||
+        app.selections.showOutsideView == false
+      ) {
+        if (!checkIfPlayerIsInSight(this)) {
+          return;
+        }
+      }
+    }
     noStroke();
     fill(this.color);
     //text(this.name, 10, 10);
@@ -225,6 +235,23 @@ class Player {
 
     //$$console.log(this.shapeOfSight);
   }
+}
+
+function checkIfPlayerIsInSight(player) {
+  let p = new Point(player.location.x + 0.5, player.location.y + 0.5);
+  let seen = false;
+  //loop through all players that are not NPC
+  for (let i = 0; i < app.entities.length; i++) {
+    if (app.entities[i].isNPC) {
+      continue;
+    }
+    //check if player is in sight
+    let s = new Shape(app.entities[i].shapeOfSight);
+    if (isPointInShape(p, s)) {
+      seen = true;
+    }
+  }
+  return seen;
 }
 
 function hideOutsideView() {

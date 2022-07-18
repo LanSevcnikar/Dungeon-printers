@@ -63,7 +63,7 @@ function isPointInShape(p, s) {
   }
 
   //console.log(p,s,points);
-  if (count == count2 && count > 0) return true;
+  if (count == count2 && count % 2 == 1) return true;
   return false;
 }
 

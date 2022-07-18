@@ -97,7 +97,7 @@ let app = createApp({
       this.previouslySelectedPlayer = null;
       this.addedEntity = {
         name: "",
-        color: [0,0,0],
+        color: [0, 0, 0],
         isNPC: false,
       };
       this.addedLayer = "";
@@ -179,7 +179,9 @@ function draw() {
 
   if (app.selections.showFieldOfView) {
     app.entities.forEach((player) => {
-      player.drawShapeOfSight([150, 150, 150, 255]);
+      if (!player.isNPC) {
+        player.drawShapeOfSight([150, 150, 150, 255]);
+      }
     });
   }
   app.layers.forEach((layer) => {
