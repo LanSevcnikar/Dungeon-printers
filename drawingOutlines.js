@@ -94,20 +94,3 @@ function drawGrid() {
     }
   }
 }
-
-function drawSelectedOutline(){
-  //loop through points in freeLine'
-  //console.log(freeLine[0]);
-  for(let i = 0; i < freeLine.length; i++){
-    freeLine[i].draw();
-  }
-  strokeWeight(2);
-  for(let i = 0; i < freeLine.length-1; i++){
-    line(
-      camToScreen(freeLine[i]).x,
-      camToScreen(freeLine[i]).y,
-      camToScreen(freeLine[i+1]).x,
-      camToScreen(freeLine[i+1]).y
-      )
-  }
-}

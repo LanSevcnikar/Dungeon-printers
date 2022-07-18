@@ -1,5 +1,17 @@
 const { createApp } = Vue;
 
+let allDataTypes = [
+  "selectedTool",
+  "offsetForDrawing",
+  "freeDraw",
+  "layers",
+  "selectedLayer",
+  "selectedPlayer",
+  "previouslySelectedPlayer",
+  "entities",
+  "selectedShapes",
+];
+
 let app = createApp({
   data() {
     return {
@@ -130,6 +142,7 @@ let freeLine = [];
 
 function updateHistory() {
   let temp = JSON.stringify(app);
+
   history.push(temp);
   //delete first element if longer than 12
   if (history.length > 12) {
@@ -236,7 +249,99 @@ function draw() {
   text("Mouse Location: (" + mouseX + "," + mouseY + ")", 10, 120);
 }
 
+function updateBrushStroke() {
+  let temp = new Point(mouseX, mouseY);
+  temp.subtract(
+    app.brushStrokes[app.selections.strokeCount].points[
+      app.brushStrokes[app.selections.strokeCount].points.length - 1
+    ]
+  );
+  if (temp.magnitude() > 10) {
+    app.brushStrokes[app.selections.strokeCount].points.push(
+      new Point(mouseX, mouseY)
+    );
+  }
+}
 
+//p5js function to export canvas to jpg
+function exportToJPG() {
+  
+  let name = app.fileExportName;
+  if (name == "") {
+    name = "untitled";
+  }
+  saveCanvas(name + ".jpg");
+}
+
+function drawSelectedOutline(){
+  //loop through points in freeLine'
+  //console.log(freeLine[0]);
+  for(let i = 0; i < freeLine.length; i++){
+    freeLine[i].draw();
+  }
+  strokeWeight(2);
+  for(let i = 0; i < freeLine.length-1; i++){
+    line(
+      camToScreen(freeLine[i]).x,
+      camToScreen(freeLine[i]).y,
+      camToScreen(freeLine[i+1]).x,
+      camToScreen(freeLine[i+1]).y
+      )
+  }
+}
+
+function drawBrushStrokes() {
+  //loop through all brush strokes
+  for (let i = 0; i < app.brushStrokes.length; i++) {
+    strokeWeight(app.brushStrokes[i].color[3]);
+    //set color of stroke and fill to brush color
+    stroke([app.brushStrokes[i].color[0],app.brushStrokes[i].color[1],app.brushStrokes[i].color[2],200]);
+    fill([app.brushStrokes[i].color[0],app.brushStrokes[i].color[1],app.brushStrokes[i].color[2],200]);
+    //loop through all points in stroke
+    for (let j = 0; j < app.brushStrokes[i].points.length - 1; j++) {
+      //draw line between two points
+      line(
+        app.brushStrokes[i].points[j].x,
+        app.brushStrokes[i].points[j].y,
+        app.brushStrokes[i].points[j + 1].x,
+        app.brushStrokes[i].points[j + 1].y
+      );
+    }
+  }
+}
+
+function updateSelectedPlayerLocation(player) {
+  let temp = new Point(
+    mouseX - screenSizeOfGrid / 2,
+    mouseY - screenSizeOfGrid / 2
+  );
+  temp = screenToCam(temp);
+  if (app.selections.snapEntities) {
+    temp = snapToInt(temp);
+  }
+  if (temp.x != player.location.x || temp.y != player.location.y) {
+    player.location = temp;
+    if (
+      app.selections.showFieldOfView ||
+      app.selections.showOutsideView == false
+    ) {
+      if (app.selections.smoothUpdate) {
+        player.findSightOfPlayer();
+      }
+    }
+  }
+  player.location = temp;
+}
+
+function moveSelectedShapes() {
+  let temp = new Point(mouseX, mouseY);
+  temp = screenToCam(temp);
+  temp.subtract(mousePrevious);
+  temp = snapToInt(temp);
+  app.selectedShapes.forEach((shape) => {
+    console.log(shape);
+  });
+}
 
 function updateAllThings() {
   //loop through all layers
