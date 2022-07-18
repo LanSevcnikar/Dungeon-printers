@@ -22,12 +22,16 @@ let app = createApp({
         selectedTool: "rec", //
         offsetForDrawing: 0.2, //
         freeDraw: false, //
+        brushColor: [120, 0, 0, 4],
+        strokeCount: 0,
         selectedLayer: 0, //
         showFieldOfView: false, //
         showOutsideView: true, //
         snapEntities: true,
         smoothUpdate: false,
       },
+
+      brushStrokes: [],
 
       //Really importaint things
       layers: [new Layer("Layer 1")],
@@ -79,6 +83,10 @@ let app = createApp({
         this.layers.splice(index, 1);
       }
     },
+    clearBrush(){
+      this.brushStrokes = [];
+      this.selections.strokeCount = 0;
+    },
     resetAllData() {
       this.selections = {
         showGrid: true,
@@ -86,12 +94,16 @@ let app = createApp({
         selectedTool: "rec", //
         offsetForDrawing: 0.2, //
         freeDraw: false, //
+        brushColor: [120, 0, 0, 4],
+        strokeCount: 0,
         selectedLayer: 0, //
         showFieldOfView: false, //
         showOutsideView: true, //
         snapEntities: true,
         smoothUpdate: false,
       };
+
+      this.brushStrokes = [];
 
       this.layers = [new Layer("Layer 1")];
       this.entities = [];
@@ -207,6 +219,14 @@ function draw() {
   app.entities.forEach((player) => {
     player.draw();
   });
+  if (app.selections.selectedTool == "drw") {
+    if (app.selections.strokeCount + 1 == app.brushStrokes.length) {
+      if (mouseIsPressed) {
+        updateBrushStroke();
+      }
+    }
+  }
+  drawBrushStrokes();
 
   if (app.selections.showGrid) {
     drawGrid();
@@ -222,6 +242,41 @@ function draw() {
   text("Framerate: " + frameRate().toFixed(2), 10, 80);
   text("Mouse Prs: (" + mousePrevious.x + "," + mousePrevious.y + ")", 10, 100);
   text("Mouse Location: (" + mouseX + "," + mouseY + ")", 10, 120);
+}
+
+function updateBrushStroke() {
+  let temp = new Point(mouseX, mouseY);
+  temp.subtract(
+    app.brushStrokes[app.selections.strokeCount].points[
+      app.brushStrokes[app.selections.strokeCount].points.length - 1
+    ]
+  );
+  if (temp.magnitude() > 10) {
+    app.brushStrokes[app.selections.strokeCount].points.push(
+      new Point(mouseX, mouseY)
+    );
+  }
+}
+
+
+function drawBrushStrokes() {
+  //loop through all brush strokes
+  for (let i = 0; i < app.brushStrokes.length; i++) {
+    strokeWeight(app.brushStrokes[i].color[3]);
+    //set color of stroke and fill to brush color
+    stroke([app.brushStrokes[i].color[0],app.brushStrokes[i].color[1],app.brushStrokes[i].color[2],200]);
+    fill([app.brushStrokes[i].color[0],app.brushStrokes[i].color[1],app.brushStrokes[i].color[2],200]);
+    //loop through all points in stroke
+    for (let j = 0; j < app.brushStrokes[i].points.length - 1; j++) {
+      //draw line between two points
+      line(
+        app.brushStrokes[i].points[j].x,
+        app.brushStrokes[i].points[j].y,
+        app.brushStrokes[i].points[j + 1].x,
+        app.brushStrokes[i].points[j + 1].y
+      );
+    }
+  }
 }
 
 function updateSelectedPlayerLocation(player) {
@@ -267,8 +322,6 @@ function updateAllThings() {
     if (!entity.isNPC) {
       entity.findSightOfPlayer();
     }
-
-    
   });
   app.layers.forEach((layer, index) => {
     updateSublinesOfAllShapesOnLayer(index);

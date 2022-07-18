@@ -24,6 +24,7 @@ function loadFromJson(data) {
     );
     app.entities[i].shapeOfSight;; 
   }
+  app.brushStrokes = data.brushStrokes;
 
   //console.log(app);
   //loop through all layers

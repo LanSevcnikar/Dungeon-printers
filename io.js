@@ -80,6 +80,19 @@ function mousePressed() {
       //console.log(closestPlayer);
       app.selectedPlayer = closestPlayer;
     }
+
+    if (app.selections.selectedTool == "drw") {
+      app.brushStrokes;
+      app.brushStrokes.push({
+        color: [
+          app.selections.brushColor[0],
+          app.selections.brushColor[1],
+          app.selections.brushColor[2],
+          app.selections.brushColor[3],
+        ],
+        points: [new Point(mouseX, mouseY)],
+      });
+    }
   }
 }
 
@@ -95,6 +108,9 @@ function mouseReleased() {
   if (app.selections.selectedTool == "sel") {
     mouseReleasedSelect();
   }
+  if (app.selections.selectedTool == "drw") {
+    app.selections.strokeCount += 1;
+  }
   //check if spaceBar is being pressed
   if (!keyIsDown(32)) {
     updateAllThings();
@@ -104,7 +120,6 @@ function mouseReleased() {
   mousePrevious.x = NaN;
   mousePrevious.y = NaN;
 }
-
 
 function mouseReleasedSelect() {
   app.selectedShapes = [];
@@ -274,27 +289,6 @@ function keyPressed() {
     if (keyIsDown(90)) {
       undoHistory();
     }
-  }
-
-  switch (keyCode) {
-    case 49:
-      app.selections.selectedTool = "rec";
-      break;
-    case 50:
-      app.selections.selectedTool = "oct";
-      break;
-    case 51:
-      app.selections.selectedTool = "sel";
-      break;
-    case 52:
-      app.selections.selectedTool = "mov";
-      break;
-    case 53:
-      app.selections.selectedTool = "fre";
-      break;
-    case 54:
-      app.selections.selectedTool = "chm";
-      break;
   }
 }
 
