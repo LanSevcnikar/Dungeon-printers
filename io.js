@@ -268,13 +268,17 @@ function mouseRealeasedOcto() {
 function windowResized() {
   //console.log("Window was resized");
   screenHeight = window.innerHeight;
-  screenWidth = window.innerWidth;
+  screenWidth = window.innerWidth - 450;
   //console.log(screenHeight, screenWidth);
   resizeCanvas(screenWidth, screenHeight);
 }
 
 function exportToJson() {
-  saveJSON(app, "map.json");
+  let name = app.fileExportName;
+  if (name == "") {
+    name = "untitled";
+  }
+  saveJSON(app, name + ".json");
 }
 
 function importToJson() {

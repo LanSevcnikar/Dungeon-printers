@@ -130,7 +130,7 @@ const color_select = [60, 60, 230, 180];
 const colour_lines = (232, 233, 235);
 const colour_background_lines = (132, 133, 135);
 
-screenWidth = window.innerWidth;
+screenWidth = window.innerWidth - 450 ;
 screenHeight = window.innerHeight;
 
 let mousePrevious = new Point(NaN, NaN);
@@ -261,6 +261,16 @@ function updateBrushStroke() {
       new Point(mouseX, mouseY)
     );
   }
+}
+
+//p5js function to export canvas to jpg
+function exportToJPG() {
+  
+  let name = app.fileExportName;
+  if (name == "") {
+    name = "untitled";
+  }
+  saveCanvas(name + ".jpg");
 }
 
 function drawSelectedOutline(){

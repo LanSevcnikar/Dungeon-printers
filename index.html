@@ -96,9 +96,13 @@
             <div>______________________</div> <br>
             SAVE / LOAD
             <br>
+            <input type="text" placeholder="Name of file" v-model="fileExportName">
             <button onclick="exportToJson()">Save map</button>
+            <button onclick="exportToJPG();">Save as JPG</button>
+            <br>
             <input type="file" id="inputJSONFile">
-            <button onclick="importToJson()">Load map</button>
+            <button onclick="importToJson()">Load map</button><br>
+            
           </div>
         </div>
       </div>
