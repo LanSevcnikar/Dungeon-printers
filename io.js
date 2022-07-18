@@ -273,28 +273,6 @@ function windowResized() {
   resizeCanvas(screenWidth, screenHeight);
 }
 
-function exportToJson() {
-  let name = app.fileExportName;
-  if (name == "") {
-    name = "untitled";
-  }
-  saveJSON(app, name + ".json");
-}
-
-function importToJson() {
-  let file = document.getElementById("inputJSONFile").files[0];
-  let reader = new FileReader();
-
-  reader.readAsText(file);
-
-  reader.onload = function () {
-    let data = JSON.parse(reader.result);
-    //console.log(data);
-
-    loadFromJson(data);
-  };
-}
-
 function keyPressed() {
   //check if key is delete
   if (keyCode === DELETE) {

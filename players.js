@@ -262,3 +262,26 @@ function checkIfPlayerIsInSight(player) {
   }
   return seen;
 }
+
+function updateSelectedPlayerLocation(player) {
+  let temp = new Point(
+    mouseX - screenSizeOfGrid / 2,
+    mouseY - screenSizeOfGrid / 2
+  );
+  temp = screenToCam(temp);
+  if (app.selections.snapEntities) {
+    temp = snapToInt(temp);
+  }
+  if (temp.x != player.location.x || temp.y != player.location.y) {
+    player.location = temp;
+    if (
+      app.selections.showFieldOfView ||
+      app.selections.showOutsideView == false
+    ) {
+      if (app.selections.smoothUpdate) {
+        player.findSightOfPlayer();
+      }
+    }
+  }
+  player.location = temp;
+}
