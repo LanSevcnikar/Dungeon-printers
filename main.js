@@ -25,6 +25,7 @@ let app = createApp({
         selectedLayer: 0, //
         showFieldOfView: false, //
         showOutsideView: true, //
+        snapEntities: true,
       },
 
       //Really importaint things
@@ -87,6 +88,7 @@ let app = createApp({
         selectedLayer: 0, //
         showFieldOfView: false, //
         showOutsideView: true, //
+        snapEntities: true,
       };
 
       this.layers = [new Layer("Layer 1")];
@@ -172,6 +174,10 @@ function draw() {
   }
   if (app.selectedPlayer != null) {
     updateSelectedPlayerLocation(app.selectedPlayer);
+    //loop throughg all layers
+    app.layers.forEach((layer, index) => {
+      updateSublinesOfAllShapesOnLayer(index);
+    });
   }
   app.selectedShapes.forEach((shape) => {
     drawShapeBase(shape, new Layer("Select", color_select));
@@ -187,10 +193,6 @@ function draw() {
   app.layers.forEach((layer) => {
     layer.drawAllShapesOutline();
   });
-
-  if (!app.selections.showOutsideView) {
-    hideOutsideView();
-  }
 
   //show all players
   app.entities.forEach((player) => {
@@ -219,11 +221,12 @@ function updateSelectedPlayerLocation(player) {
     mouseY - screenSizeOfGrid / 2
   );
   temp = screenToCam(temp);
-  temp = snapToInt(temp);
+  if (app.selections.snapEntities) {
+    temp = snapToInt(temp);
+  }
   if (temp.x != player.location.x || temp.y != player.location.y) {
     player.location = temp;
     player.findSightOfPlayer();
-    console.log("Player has moved");
   }
   player.location = temp;
 }
@@ -244,10 +247,17 @@ function updateAllThings() {
     updateLinesOfAllShapesOnLayer(index);
   });
 
-  console.log("update all things", app.layers);
-
-  //loop through all entities and update their lines
   app.entities.forEach((entity) => {
-    entity.findSightOfPlayer();
+    if (!entity.isNPC) {
+      entity.findSightOfPlayer();
+    }
+
+    app.layers.forEach((layer, index) => {
+      updateSublinesOfAllShapesOnLayer(index);
+    });
+
+    console.log("update all things");
+
+    //loop through all entities and update their lines
   });
 }

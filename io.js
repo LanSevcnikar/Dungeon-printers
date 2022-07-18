@@ -36,7 +36,10 @@ function mousePressed() {
   updateHistory();
   // if spacebar is not being pressed
   if (!keyIsDown(32)) {
-    if (app.selections.selectedTool == "rec" || app.selections.selectedTool == "oct") {
+    if (
+      app.selections.selectedTool == "rec" ||
+      app.selections.selectedTool == "oct"
+    ) {
       mousePrevious.x = mouseX;
       mousePrevious.y = mouseY;
       mousePrevious = screenToCam(mousePrevious);
@@ -92,22 +95,27 @@ function mouseReleased() {
   if (app.selections.selectedTool == "sel") {
     mouseReleasedSelect();
   }
-  if (app.selections.selectedTool == "mov") {
+  //check if spaceBar is being pressed
+  if (!keyIsDown(32)) {
+    updateAllThings();
   }
-
-  updateAllThings();
 
   app.selectedPlayer = null;
   mousePrevious.x = NaN;
   mousePrevious.y = NaN;
 }
 
+
 function mouseReleasedSelect() {
   app.selectedShapes = [];
   let temp = new Point(mouseX, mouseY);
   temp = screenToCam(temp);
   //loop through all shapes in selected layer
-  for (let i = 0; i < app.layers[app.selections.selectedLayer].shapes.length; i++) {
+  for (
+    let i = 0;
+    i < app.layers[app.selections.selectedLayer].shapes.length;
+    i++
+  ) {
     //set new variable to shape and loop through all points of current shape
     let shape = app.layers[app.selections.selectedLayer].shapes[i];
 
@@ -256,14 +264,14 @@ function keyPressed() {
     deleteSelected();
   }
 
-  if(keyCode == 90){
-    if(keyIsDown(17)){
+  if (keyCode == 90) {
+    if (keyIsDown(17)) {
       undoHistory();
     }
   }
-  
-  if(keyCode == 17){
-    if(keyIsDown(90)){
+
+  if (keyCode == 17) {
+    if (keyIsDown(90)) {
       undoHistory();
     }
   }
@@ -287,7 +295,6 @@ function keyPressed() {
     case 54:
       app.selections.selectedTool = "chm";
       break;
-
   }
 }
 
@@ -296,8 +303,9 @@ function deleteSelected() {
   if (app.selectedShapes.length > 0) {
     //console.log(app.selectedShapes, "deleting them")
     for (let i = 0; i < app.selectedShapes.length; i++) {
-
-      app.layers[app.selections.selectedLayer].deleteShape(app.selectedShapes[i]);
+      app.layers[app.selections.selectedLayer].deleteShape(
+        app.selectedShapes[i]
+      );
     }
     app.selectedShapes = [];
   }

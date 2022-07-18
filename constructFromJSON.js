@@ -1,12 +1,6 @@
 function loadFromJson(data) {
   //console.log("Hello world",data);
-  app.selections.selectedTool = data.selections.selectedTool;
-  app.selections.offsetForDrawing = data.selections.offsetForDrawing;
-  app.selections.freeDraw = data.selections.freeDraw;
-  app.selections.showGrid = data.selections.showGrid;
-  app.selections.showDevTools = data.selections.showDevTools; 
-  app.selections.showFieldOfView = data.selections.showFieldOfView;
-  app.selections.showOutsideView = data.selections.showOutsideView;
+  app.selections = {...data.selections};
   app.layers = [];
   for (let i = 0; i < data.layers.length; i++) {
     app.layers.push(new Layer(data.layers[i].name, data.layers[i].color));

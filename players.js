@@ -212,12 +212,13 @@ class Player {
     for (let i = 0; i < allPoints.length; i++) {
       allPoints[i].subtract(playerPosition);
       let temp = new Point(allPoints[i].x, allPoints[i].y);
-      temp.setmag(0.001);
+      temp.setmag(0.05 );
       allPoints[i].add(temp);
       allPoints[i].add(playerPosition);
     }
 
-    this.shapeOfSight = [...allPoints];
+    this.shapeOfSight =allPoints;
+    this.shapeOfSight.push(this.shapeOfSight[0]);
     //console.log(allPoints);
   }
 
@@ -238,7 +239,10 @@ class Player {
 }
 
 function checkIfPlayerIsInSight(player) {
-  let p = new Point(player.location.x + 0.5, player.location.y + 0.5);
+  let p1 = new Point(player.location.x + 0.4, player.location.y + 0.4);
+  let p2 = new Point(player.location.x + 0.4, player.location.y + 0.6);
+  let p3 = new Point(player.location.x + 0.6, player.location.y + 0.6);
+  let p4 = new Point(player.location.x + 0.6, player.location.y + 0.4);
   let seen = false;
   //loop through all players that are not NPC
   for (let i = 0; i < app.entities.length; i++) {
@@ -247,29 +251,14 @@ function checkIfPlayerIsInSight(player) {
     }
     //check if player is in sight
     let s = new Shape(app.entities[i].shapeOfSight);
-    if (isPointInShape(p, s)) {
+    if (
+      isPointInShape(p1, s) ||
+      isPointInShape(p2, s) ||
+      isPointInShape(p3, s) ||
+      isPointInShape(p4, s)
+    ) {
       seen = true;
     }
   }
   return seen;
-}
-
-function hideOutsideView() {
-  noStroke();
-  fill(colour_background[0], colour_background[1], colour_background[2], 230);
-  beginShape();
-  vertex(0, 0);
-  vertex(0, screenHeight);
-  vertex(screenWidth, screenHeight);
-  vertex(screenWidth, 0);
-  //loop through entities
-  app.entities.forEach(function (entity) {
-    beginContour();
-    //loop through all points of dield of view in entity
-    entity.shapeOfSight.forEach(function (point) {
-      vertex(camToScreen(point).x, camToScreen(point).y);
-    });
-    endContour();
-  });
-  endShape(CLOSE);
 }

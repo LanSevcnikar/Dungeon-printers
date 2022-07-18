@@ -38,10 +38,11 @@ class Point {
   }
   //draw function to draw the point
   draw(i) {
-    if(i == null) i = 5;
+    fill(255);
+    if (i == null) i = 5;
     //draw eclipse at coordinates
     //console.log(this)
-    ellipse(camToScreen(this).x, camToScreen(this).y, i, i );
+    ellipse(camToScreen(this).x, camToScreen(this).y, i, i);
   }
   //distance function between this and another point
   distance(p) {
@@ -51,14 +52,14 @@ class Point {
   }
   //function to rotate point by x degrees around 0,0
   rotate(x) {
-    let a = x * PI / 180;
+    let a = (x * PI) / 180;
     let newX = this.x * cos(a) - this.y * sin(a);
     let newY = this.x * sin(a) + this.y * cos(a);
     this.x = newX;
     this.y = newY;
   }
-  angleBetween(p){
-    return atan2(this.y - p.y, this.x - p.x); 
+  angleBetween(p) {
+    return atan2(this.y - p.y, this.x - p.x);
   }
 }
 
@@ -67,6 +68,7 @@ class Shape {
   constructor(a) {
     this.points = [];
     this.lines = [];
+    this.sublines = [];
     a.forEach((element) => {
       if (this.points.length == 0) this.points.push(element);
       else if (!isSamePoint(element, this.points[this.points.length - 1])) {
@@ -101,12 +103,20 @@ class Layer {
   //draweAllShapes function
   drawAllShapesBase() {
     //set fill and stroke according to internal data
-    this.shapes.forEach((shape) => {
-      fill((this.color + 130) / 4);
-      stroke(this.color);
-      strokeWeight(2);
-      drawShapeBase(shape, this);
-    });
+    if (app.selections.showOutsideView) {
+      this.shapes.forEach((shape) => {
+        drawShapeBase(shape, this);
+      });
+    } else {
+      //loop through all players that are not NPCs
+      for (let i = 0; i < app.entities.length; i++) {
+        if (!app.entities[i].isNPC) {
+          //create new shape for player sight
+          let playerSight = new Shape(app.entities [i].shapeOfSight);
+          drawShapeBase(playerSight, app.layers[0]);
+        }
+      }
+    }
   }
 
   drawAllShapesOutline() {
@@ -144,7 +154,11 @@ function isSameDouble(a, b) {
 }
 
 //function that will find the collision point of two lines defined by points, returning NULL if there is no collision
-function findPointOfCollision(p1, p2, p3, p4) {
+function findPointOfCollision(_p1, _p2, _p3, _p4) {
+  let p1 = new Point(_p1.x, _p1.y);
+  let p2 = new Point(_p2.x, _p2.y);
+  let p3 = new Point(_p3.x, _p3.y);
+  let p4 = new Point(_p4.x, _p4.y);
   //check if first or second line is vertical
   if (isSameDouble(p1.x, p2.x) || isSameDouble(p3.x, p4.x)) {
     if (isSameDouble(p1.x, p2.x) && isSameDouble(p3.x, p4.x)) {
