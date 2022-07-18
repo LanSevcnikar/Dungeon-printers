@@ -27,14 +27,7 @@ function loadFromJson(data) {
 
   //console.log(app);
   //loop through all layers
-  for (let i = 0; i < app.layers.length; i++) {
-    //call updateLines on each layer
-    updateLinesOfAllShapesOnLayer(i);
-  }
-
-  app.entities.forEach((player) => {
-    player.findSightOfPlayer();
-  });
+  updateAllThings();
 }
 
 window.onbeforeunload = () => {

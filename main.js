@@ -26,6 +26,7 @@ let app = createApp({
         showFieldOfView: false, //
         showOutsideView: true, //
         snapEntities: true,
+        smoothUpdate: false,
       },
 
       //Really importaint things
@@ -89,6 +90,7 @@ let app = createApp({
         showFieldOfView: false, //
         showOutsideView: true, //
         snapEntities: true,
+        smoothUpdate: false,
       };
 
       this.layers = [new Layer("Layer 1")];
@@ -103,6 +105,8 @@ let app = createApp({
         isNPC: false,
       };
       this.addedLayer = "";
+
+      updateAllThings();
     },
   },
 }).mount("#app");
@@ -161,9 +165,9 @@ function draw() {
   //set fill colour to whitr
   background(colour_background);
 
-  if (app.selections.selectedTool == "mov" && mousePrevious.x != NaN) {
-    moveSelectedShapes();
-  }
+  // if (app.selections.selectedTool == "mov" && mousePrevious.x != NaN) {
+  //   moveSelectedShapes();
+  // }
   app.layers.forEach((layer) => {
     layer.drawAllShapesBase();
   });
@@ -175,9 +179,14 @@ function draw() {
   if (app.selectedPlayer != null) {
     updateSelectedPlayerLocation(app.selectedPlayer);
     //loop throughg all layers
-    app.layers.forEach((layer, index) => {
-      updateSublinesOfAllShapesOnLayer(index);
-    });
+    if (
+      app.selections.showOutsideView == false &&
+      app.selections.smoothUpdate
+    ) {
+      app.layers.forEach((layer, index) => {
+        updateSublinesOfAllShapesOnLayer(index);
+      });
+    }
   }
   app.selectedShapes.forEach((shape) => {
     drawShapeBase(shape, new Layer("Select", color_select));
@@ -226,7 +235,14 @@ function updateSelectedPlayerLocation(player) {
   }
   if (temp.x != player.location.x || temp.y != player.location.y) {
     player.location = temp;
-    player.findSightOfPlayer();
+    if (
+      app.selections.showFieldOfView ||
+      app.selections.showOutsideView == false
+    ) {
+      if (app.selections.smoothUpdate) {
+        player.findSightOfPlayer();
+      }
+    }
   }
   player.location = temp;
 }
@@ -252,12 +268,10 @@ function updateAllThings() {
       entity.findSightOfPlayer();
     }
 
-    app.layers.forEach((layer, index) => {
-      updateSublinesOfAllShapesOnLayer(index);
-    });
-
-    console.log("update all things");
-
-    //loop through all entities and update their lines
+    
   });
+  app.layers.forEach((layer, index) => {
+    updateSublinesOfAllShapesOnLayer(index);
+  });
+  console.log("update all things");
 }
