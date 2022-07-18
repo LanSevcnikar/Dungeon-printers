@@ -32,7 +32,7 @@ function mouseWheel(event) {
 
 //on mouse pressed save current mouse position
 function mousePressed() {
-  if (mouseX > screenWidth - 450) return;
+  if (mouseX > screenWidth) return;
   updateHistory();
   // if spacebar is not being pressed
   if (!keyIsDown(32)) {
@@ -108,7 +108,7 @@ function mousePressed() {
           app.selections.brushColor[2],
           app.selections.brushColor[3],
         ],
-        points: [new Point(mouseX, mouseY)],
+        points: [screenToCam(new Point(mouseX, mouseY))],
       });
     }
   }
@@ -116,7 +116,7 @@ function mousePressed() {
 
 //on mouse released set mouse previous values to NaN
 function mouseReleased() {
-  if (mouseX > screenWidth - 450) return;
+  if (mouseX > screenWidth) return;
   if (app.selections.selectedTool == "rec") {
     mouseRealeasedRectangle();
   }

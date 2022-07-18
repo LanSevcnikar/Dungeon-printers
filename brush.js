@@ -7,7 +7,7 @@ function updateBrushStroke() {
   );
   if (temp.magnitude() > 10) {
     app.brushStrokes[app.selections.strokeCount].points.push(
-      new Point(mouseX, mouseY)
+      screenToCam(new Point(mouseX, mouseY))
     );
   }
 }
@@ -23,11 +23,11 @@ function drawBrushStrokes() {
     for (let j = 0; j < app.brushStrokes[i].points.length - 1; j++) {
       //draw line between two points
       line(
-        app.brushStrokes[i].points[j].x,
-        app.brushStrokes[i].points[j].y,
-        app.brushStrokes[i].points[j + 1].x,
-        app.brushStrokes[i].points[j + 1].y
-      );
+        camToScreen(app.brushStrokes[i].points[j]).x,
+        camToScreen(app.brushStrokes[i].points[j]).y,
+        camToScreen(app.brushStrokes[i].points[j + 1]).x,
+        camToScreen(app.brushStrokes[i].points[j + 1]).y
+        );
     }
   }
 }
