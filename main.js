@@ -138,6 +138,7 @@ let cam = new Point(0, 0);
 let screenSizeOfGrid = 40;
 
 let history = [];
+let freeLine = [];
 
 function updateHistory() {
   let temp = JSON.stringify(app);
@@ -231,6 +232,10 @@ function draw() {
   if (app.selections.showGrid) {
     drawGrid();
   }
+
+  if(app.selections.selectedTool == "fre"){
+    drawSelectedOutline();
+  }
   //text in top corner to show cam location and scale  and grid size big font white font
   //set font to white
   if (app.selections.showDevTools == false) return;
@@ -258,6 +263,22 @@ function updateBrushStroke() {
   }
 }
 
+function drawSelectedOutline(){
+  //loop through points in freeLine'
+  //console.log(freeLine[0]);
+  for(let i = 0; i < freeLine.length; i++){
+    freeLine[i].draw();
+  }
+  strokeWeight(2);
+  for(let i = 0; i < freeLine.length-1; i++){
+    line(
+      camToScreen(freeLine[i]).x,
+      camToScreen(freeLine[i]).y,
+      camToScreen(freeLine[i+1]).x,
+      camToScreen(freeLine[i+1]).y
+      )
+  }
+}
 
 function drawBrushStrokes() {
   //loop through all brush strokes

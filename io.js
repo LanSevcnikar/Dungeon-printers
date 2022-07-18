@@ -81,6 +81,24 @@ function mousePressed() {
       app.selectedPlayer = closestPlayer;
     }
 
+    if(app.selections.selectedTool == "fre"){
+      let temp = new Point(mouseX, mouseY);
+      temp = screenToCam(temp);
+      if(freeLine.length == 0){
+        freeLine.push(temp);
+      }
+      else{
+        temp.subtract(freeLine[0]);
+        if(temp.magnitude() < 0.3){
+          app.layers[app.selections.selectedLayer].addShape(new Shape(freeLine));
+          freeLine = [];
+        }else{
+          temp.add(freeLine[0]);
+          freeLine.push(temp);
+        }
+      }
+    }
+
     if (app.selections.selectedTool == "drw") {
       app.brushStrokes;
       app.brushStrokes.push({
