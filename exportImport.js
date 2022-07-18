@@ -45,3 +45,36 @@ window.onload = () => {
     loadFromJson(JSON.parse(data));
   }
 }
+
+//p5js function to export canvas to jpg
+function exportToJPG() {
+  let name = app.fileExportName;
+  if (name == "") {
+    name = "untitled";
+  }
+  saveCanvas(name + ".jpg");
+}
+
+
+function exportToJson() {
+  let name = app.fileExportName;
+  if (name == "") {
+    name = "untitled";
+  }
+  saveJSON(app, name + ".json");
+}
+
+function importToJson() {
+  let file = document.getElementById("inputJSONFile").files[0];
+  let reader = new FileReader();
+
+  reader.readAsText(file);
+
+  reader.onload = function () {
+    let data = JSON.parse(reader.result);
+    //console.log(data);
+
+    loadFromJson(data);
+  };
+}
+
