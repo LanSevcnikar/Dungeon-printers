@@ -130,7 +130,7 @@ function mouseReleased() {
     app.selections.strokeCount += 1;
   }
   //check if spaceBar is being pressed
-  if (!keyIsDown(32)) {
+  if (!keyIsDown(32) && app.selections.selectedTool != "drw") {
     updateAllThings();
   }
 
